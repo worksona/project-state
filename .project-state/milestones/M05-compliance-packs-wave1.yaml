@@ -1,0 +1,30 @@
+id: M05-compliance-packs-wave1
+kind: milestone
+title: "Compliance Packs Wave 1 — Academic & Federal Research"
+owner_org: "Worksona"
+owner_person: david-olsson-worksona
+description: |
+  Build out the first wave of compliance packs for research funders:
+  nserc-academic (Canadian Tri-Council), nih-rppr (US NIH), nsf-merit (US NSF).
+  These cover the most common academic/federal research reporting patterns.
+planned_start: "2026-08-01"
+planned_end: "2026-10-31"
+actual_start: ~
+actual_end: ~
+percent_complete: 0
+technical_progress: ""
+deliverables:
+  - id: D05a
+    title: "nserc-academic pack (Tri-Council reporting)"
+    status: planned
+  - id: D05b
+    title: "nih-rppr pack (NIH Research Performance Progress Report)"
+    status: planned
+  - id: D05c
+    title: "nsf-merit pack (NSF annual/final reports)"
+    status: planned
+status: planned
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"

@@ -1,0 +1,144 @@
+---
+title: "Pack Authoring Guide"
+description: "How to write a compliance pack — profiles, templates, and matrix defaults"
+visibility: public
+last_modified: "2026-04-27"
+---
+
+A **pack** is a collection of profile YAMLs, templates, and (occasionally) thin wrapping skills that configures the v2.0 generic core for a specific funder, customer type, or industry. The PIC pack is the reference implementation; this guide is how to write your own.
+
+## When you need a pack
+
+- A funder you support (NSERC, NIH, EU Horizon, foundation grants, etc.)
+- A specific customer type (enterprise SaaS engagements, government contracts, etc.)
+- An industry compliance regime (SOC2, ISO 27001, FDA Part 11)
+- A common project-management discipline (agile sprints, waterfall, OSS governance)
+
+## When you don't need a pack
+
+- A project that doesn't have a regulated funder or customer
+- One-off customizations for a single project — those go in the project's manifest, not in a reusable pack
+- Things that the generic core handles fine (project-state, document-curator, milestone-manager, status-reporter, notifier, website-publisher, blog-publisher, change-register, onboarder, lessons all work without packs)
+
+## Anatomy of a pack
+
+```
+packs/<your-pack-id>/
+├── manifest.yaml                   — pack identity, version, what it provides
+├── README.md                       — human-readable explanation
+├── profiles/                       — YAMLs that configure generic skills
+│   ├── funder-reporting.yaml
+│   ├── review-meeting.yaml
+│   ├── external-comms.yaml
+│   ├── ip-tracker.yaml
+│   ├── archive.yaml
+│   └── phase-gate.yaml
+├── templates/                      — file templates the profiles reference
+│   ├── claim-cover-email.md
+│   ├── meeting-agenda.md
+│   └── final-report.docx
+└── reporting-matrix-defaults.yaml  — default entries to seed
+```
+
+You don't need all six profiles — provide only the ones your pack configures.
+
+## manifest.yaml schema
+
+```yaml
+pack:
+  id: "your-pack-id"           # unique slug; lowercase, dashes
+  name: "Human-Readable Name"
+  version: "1.0.0"             # semver
+  compatible_core: ">=2.0,<3.0"
+  description: |
+    What this pack does, who it's for, what funder/customer/industry it serves.
+  authors:
+    - "Name <email>"
+  governing_documents:
+    - "PM Guide / Contract / Standard the pack encodes"
+  released: "YYYY-MM-DD"
+
+provides:
+  profiles:
+    - funder-reporting   # list each profile this pack ships
+    - review-meeting
+  templates:
+    - claim-cover-email.md
+    - meeting-agenda.md
+  reporting_matrix_defaults: true
+
+depends_on:
+  packs: []                  # other packs this one requires (uncommon)
+
+conflicts_with:
+  packs: []                  # packs that can't coexist (very uncommon)
+```
+
+## Writing a profile
+
+A profile YAML configures one of the six generic skills. Each profile has a `profile_id` that the skill loads when this pack is active.
+
+Example skeleton for `funder-reporting.yaml`:
+
+```yaml
+profile_id: <your-pack-id>.funder-reporting
+stakeholder_group: <which stakeholder this pack reports to>
+
+reports:
+  - id: <report-id>
+    name: "Human-readable name"
+    cadence: { ... }              # see REPORTING-MATRIX.md for cadence kinds
+    format: { kind, template, output_naming }
+    field_mapping: { ... }
+    cover_delivery: { surface, to, cc, template, subject }
+    signoff_required: [ ... ]
+    submission: "manual"           # always; never auto-submit
+```
+
+Use the PIC pack's profiles as reference (they're well-commented). The generic skill reads your profile and runs its standard mechanism with your specifics injected.
+
+## Writing templates
+
+Templates are markdown / docx / xlsx / html files referenced from profiles. Use `{variable}` placeholders for substitution. Common variables:
+
+- `{project.short_name}`, `{project.long_name}`
+- `{quarter}`, `{year}`, `{month}`, `{coverage_start}`, `{coverage_end}`
+- `{stakeholder.<id>.contacts.<role>}` for any stakeholder contact
+- `{milestones_completed}`, `{overall_percent_complete}`, etc. — substrate-derived values
+
+The skill substitutes these at draft time.
+
+## Writing a reporting-matrix-defaults.yaml
+
+This file lists the matrix entries your pack seeds when a project loads it via `seed-matrix --pack <your-pack-id>`. Entries follow the same schema as `reporting-matrix.yaml` (see REPORTING-MATRIX.md).
+
+Use `{customer_id}`, `{funder_id}` etc. as parameterized placeholders if the stakeholder ID isn't fixed (the seed tool prompts the user to fill these in).
+
+## Pack distribution
+
+For now: zip your pack folder and share it. Receivers unzip into `.project-state/packs/`.
+
+Future direction: a lightweight pack registry (npm-style or git-based) so packs can be installed by name. Out of scope for v2.0.
+
+## Pack maturity levels
+
+Mark in `manifest.yaml`:
+
+- `production` — battle-tested in real projects with that funder/customer
+- `starter` — shape is right but tune to your specifics
+- `experimental` — early proof-of-concept, expect breakage
+
+The PIC pack is `production`. The reference packs (`client-services`, `board-investor`, `agile-default`, `open-source-community`) are `starter`.
+
+## Versioning
+
+Pack version is independent of core version. A pack's `compatible_core` constraint says which core versions it works with.
+
+When the underlying funder/customer changes their requirements (e.g. PIC updates the PM Guide), bump the pack version and ship a new release. Projects can pin to a specific version or follow latest.
+
+## Submitting a pack to the registry
+
+(Not implemented in v2.0; planned for v2.1+.) The intent: a single shared registry where vetted packs live, so a project loading a pack pulls a known-good version.
+
+For v2.0, packs are distributed informally — zip files, git repos, internal share drives — until the registry exists.
+

@@ -1,0 +1,15 @@
+id: R-01-single-maintainer
+kind: risk
+title: "Single maintainer — bus factor of one"
+likelihood: high
+impact: high
+score: 9
+owner: david-olsson-worksona
+mitigation: "Recruit at least one co-maintainer with write access. Prioritize PIC pack co-ownership (only production pack). Document the release process. Write a contributor onboarding guide."
+contingency: "Substrate files remain functional on disk as plain YAML. Another person can operate read-only. No new packs, features, or bug fixes ship until a new maintainer is found."
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

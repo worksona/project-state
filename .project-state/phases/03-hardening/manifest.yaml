@@ -1,0 +1,7 @@
+id: "03-hardening"
+label: "Hardening"
+status: completed
+gate_in: "Release candidate ready"
+gate_out: "RC stabilized; release notes prepared"
+entered: "2026-04-27"
+exited: "2026-04-27"

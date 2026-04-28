@@ -1,0 +1,15 @@
+id: R-11-website-path-assumption
+kind: risk
+title: "Website state loading uses fragile relative path assumption"
+likelihood: medium
+impact: medium
+score: 4
+owner: david-olsson-worksona
+mitigation: "Add a build-time data snapshot step: serialize all substrate data into JSON files inside the website directory so the deployed site doesn't depend on filesystem access to ../. Use a prebuild script that copies substrate YAML into content/ before next build runs."
+contingency: "For Vercel deployment, the current approach works because Vercel uploads the entire directory including parent paths. If deployed from a monorepo or CI, the prebuild step becomes mandatory."
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

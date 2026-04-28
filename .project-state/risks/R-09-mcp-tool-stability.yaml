@@ -1,0 +1,15 @@
+id: R-09-mcp-tool-stability
+kind: risk
+title: "MCP tool stability and Claude Code coupling"
+likelihood: medium
+impact: high
+score: 6
+owner: david-olsson-worksona
+mitigation: "Document the MCP tools each skill depends on in a central manifest. Pin to specific MCP server versions where possible. Add a health-check routine that tests each MCP tool's availability before the orchestrator runs."
+contingency: "If MCP tools break, the substrate still works. Users lose surface automation (Slack posts, Gmail drafts, Calendar events) but can manually perform those actions. System degrades to 'generate artifacts on disk, deliver manually.'"
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

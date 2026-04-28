@@ -1,0 +1,15 @@
+{
+  "current_phase": "04-release",
+  "phase_preset": "agile-default",
+  "counters": {
+    "milestones": 10,
+    "decisions": 1,
+    "changes": 0,
+    "risks": 11,
+    "ip_disclosures": 0,
+    "publications": 0,
+    "lessons": 0
+  },
+  "last_modified": "2026-04-27T00:00:00Z",
+  "last_modified_by": "david@atomic47.co"
+}

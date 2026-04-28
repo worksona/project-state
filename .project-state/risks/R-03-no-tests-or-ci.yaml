@@ -1,0 +1,15 @@
+id: R-03-no-tests-or-ci
+kind: risk
+title: "Zero automated tests or CI/CD pipeline"
+likelihood: high
+impact: high
+score: 9
+owner: david-olsson-worksona
+mitigation: "Add a minimal validation suite as first deliverable of M09: schema validators for manifest.yaml, reporting-matrix.yaml, milestone files, and pack profiles. Wire into a pre-commit hook or GitHub Action. Higher priority than M03 (matrix editor)."
+contingency: "Without tests, validate manually before each release using a checklist. Create a scripts/validate-substrate.sh that checks required fields."
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

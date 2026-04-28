@@ -1,0 +1,31 @@
+id: M07-multi-project-dashboard
+kind: milestone
+title: "Multi-Project Dashboard"
+owner_org: "Worksona"
+owner_person: david-olsson-worksona
+description: |
+  Portfolio-level view across multiple .project-state/ instances. An org running
+  3-5 projects needs a single dashboard showing phase, health, upcoming deadlines,
+  and cross-project resource conflicts. Reads multiple substrates, produces a
+  unified view on the project website or as a standalone page.
+planned_start: "2026-09-01"
+planned_end: "2026-11-30"
+actual_start: ~
+actual_end: ~
+percent_complete: 0
+technical_progress: ""
+deliverables:
+  - id: D07a
+    title: "Multi-substrate reader (discover + scan N .project-state/ dirs)"
+    status: planned
+  - id: D07b
+    title: "Portfolio dashboard page (health, phase, deadlines)"
+    status: planned
+  - id: D07c
+    title: "Cross-project resource conflict detection"
+    status: planned
+status: planned
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"

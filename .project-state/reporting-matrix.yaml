@@ -1,0 +1,47 @@
+schema_version: 2
+manifest_kind: reporting_matrix
+
+entries:
+
+  # ===== Internal team =====
+
+  - id: monday-tracker-email
+    stakeholder_group: internal.team
+    report: "Monday tracker email"
+    cadence: { kind: weekly, day: monday, lead_time_hours: 8 }
+    format: md
+    surface: blog
+    generator: project-status-reporter
+    description: |
+      Weekly status summary. Published to blog.
+
+  # ===== From agile-default pack =====
+
+  - id: sprint-retrospective
+    stakeholder_group: internal.team
+    report: "Sprint retrospective"
+    cadence: { kind: sprint-aligned, timing: "last-day-of-sprint" }
+    format: md
+    surface: blog
+    generator: project-review-meeting
+    profile: agile-default.review-meeting
+
+  - id: baseline-report-bundle
+    stakeholder_group: internal.team
+    report: "Baseline report bundle (docx + xlsx)"
+    cadence: { kind: event-driven, trigger: "phase-transition, milestone-completion, on-demand" }
+    format: docx+xlsx
+    surface: website
+    generator: project-doc-suite-generator
+    description: |
+      Styled .docx and .xlsx baseline reports: index, tracker workbook,
+      project plan, risk register, milestone specs, architecture, roadmap/KPIs.
+      Output to reports/baseline/Baseline-Reports-YYYY-MM-DD/.
+
+  - id: reference-docs
+    stakeholder_group: public
+    report: "Reference documentation"
+    cadence: { kind: on-publish, trigger: "documents/published/" }
+    format: mdx
+    surface: website
+    generator: project-website-publisher

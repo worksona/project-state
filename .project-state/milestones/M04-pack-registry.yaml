@@ -1,0 +1,30 @@
+id: M04-pack-registry
+kind: milestone
+title: "Pack Registry — Install by Name"
+owner_org: "Worksona"
+owner_person: david-olsson-worksona
+description: |
+  Lightweight pack registry (git-based or npm-style) so packs can be installed by name
+  rather than zip-file distribution. Versioned, with compatible_core constraint enforcement.
+  Deferred from v2.0 to v2.1+.
+planned_start: "2026-07-01"
+planned_end: "2026-08-31"
+actual_start: ~
+actual_end: ~
+percent_complete: 0
+technical_progress: ""
+deliverables:
+  - id: D04a
+    title: "Registry index format + hosting"
+    status: planned
+  - id: D04b
+    title: "Install/update CLI (pack install <id>)"
+    status: planned
+  - id: D04c
+    title: "Version constraint resolver"
+    status: planned
+status: planned
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"

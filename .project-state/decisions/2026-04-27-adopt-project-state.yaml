@@ -1,0 +1,14 @@
+id: 2026-04-27-adopt-project-state
+kind: decision
+date: "2026-04-27"
+title: "Adopted .project-state/ facility for project-state"
+context: "The project-state skill suite should manage itself via its own substrate."
+decision: "Scaffold .project-state/ in the repo root; load agile-default pack."
+rationale: "Eat our own dogfood. Surfaces: blog, wiki, project site."
+material_change: false
+approvers:
+  - david-olsson-worksona
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"

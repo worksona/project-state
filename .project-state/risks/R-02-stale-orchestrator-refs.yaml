@@ -1,0 +1,15 @@
+id: R-02-stale-orchestrator-refs
+kind: risk
+title: "Orchestrator SKILL.md contains stale v1 skill references"
+likelihood: high
+impact: medium
+score: 6
+owner: david-olsson-worksona
+mitigation: "Update orchestrator SKILL.md to use generic v2 skill names (project-funder-reporting, project-review-meeting). Make routines conditional on whether the active pack provides those profiles."
+contingency: "Non-PIC users will see confusing orchestrator output referencing nonexistent skills. Workaround: document that quarterly/SC sections only apply when PIC pack is loaded."
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

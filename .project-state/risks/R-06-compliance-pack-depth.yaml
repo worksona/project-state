@@ -1,0 +1,15 @@
+id: R-06-compliance-pack-depth
+kind: risk
+title: "Compliance pack research depth — Wave 1 and Wave 2 are aspirational"
+likelihood: high
+impact: medium
+score: 6
+owner: david-olsson-worksona
+mitigation: "Descope to 1 pack per wave the maintainer has access to validate (e.g. NSERC). Solicit community contributions for others via blog and issue tracker. Reframe roadmap as community-driven rather than single-author."
+contingency: "If no domain experts contribute, publish packs as experimental maturity with clear warnings. Focus effort on making the pack authoring guide and PIC pack so exemplary that others can self-serve."
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

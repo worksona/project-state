@@ -1,0 +1,15 @@
+id: R-10-no-community-infra
+kind: risk
+title: "No contributor pipeline or community infrastructure"
+likelihood: high
+impact: medium
+score: 6
+owner: david-olsson-worksona
+mitigation: "Push to a public GitHub repository with LICENSE, CONTRIBUTING.md, issue templates, and discussion forum. Make the PIC pack a showcase. Write a 'Your First Pack' tutorial as a blog post."
+contingency: "Accept the system serves a niche of one (maintainer's own projects) and optimize for that use case rather than pursuing generality."
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

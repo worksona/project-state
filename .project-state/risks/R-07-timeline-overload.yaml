@@ -1,0 +1,15 @@
+id: R-07-timeline-overload
+kind: risk
+title: "Overlapping milestone timeline for a single person — 9 milestones in 5 months"
+likelihood: high
+impact: high
+score: 9
+owner: david-olsson-worksona
+mitigation: "Ruthlessly prioritize. Highest-value milestones are M09 (validation suite — prevents silent corruption) and M02 (pack hardening — makes the system usable beyond PIC). Defer M03 (matrix editor), M07 (multi-project dashboard), and M04 (pack registry) to v2.2+. Accept that v2.1 will be smaller than planned."
+contingency: "If timeline slips, communicate openly via blog and changelog. Substrate format is stable — users are not blocked, they just don't get new features."
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

@@ -1,0 +1,8 @@
+id: "02-build-loops"
+label: "Build (recurring sprint loops)"
+status: completed
+gate_in: "Discovery complete"
+gate_out: "Release candidate ready"
+recurring: true
+entered: "2026-04-24"
+exited: "2026-04-27"

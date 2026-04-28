@@ -1,0 +1,7 @@
+id: "01-discovery"
+label: "Discovery"
+status: completed
+gate_in: ~
+gate_out: "Initial scope agreed; first sprint queue defined"
+entered: "2026-04-24"
+exited: "2026-04-24"

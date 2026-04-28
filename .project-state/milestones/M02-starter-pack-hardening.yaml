@@ -1,0 +1,33 @@
+id: M02-starter-pack-hardening
+kind: milestone
+title: "Harden Starter Packs to Production"
+owner_org: "Worksona"
+owner_person: david-olsson-worksona
+description: |
+  Promote the four starter packs (client-services, board-investor, agile-default, open-source-community)
+  from starter to production maturity. Requires real-project validation for each, complete profile
+  coverage, and tested reporting-matrix-defaults.
+planned_start: "2026-05-01"
+planned_end: "2026-06-30"
+actual_start: ~
+actual_end: ~
+percent_complete: 0
+technical_progress: ""
+deliverables:
+  - id: D02a
+    title: "client-services pack → production"
+    status: planned
+  - id: D02b
+    title: "board-investor pack → production"
+    status: planned
+  - id: D02c
+    title: "agile-default pack → production"
+    status: planned
+  - id: D02d
+    title: "open-source-community pack → production"
+    status: planned
+status: planned
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"

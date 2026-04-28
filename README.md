@@ -1,0 +1,149 @@
+# project-state
+
+**Version:** 2.0
+**Released:** 2026-04-27
+**Purpose:** A generic operational substrate for any multi-stakeholder project — grant-funded consortiums, client engagements, startups with boards, open-source communities, internal product teams. Built to handle the multi-stakeholder reporting problem that eats Project Lead time on every project regardless of funding source.
+
+This repo contains **eighteen `project-*` skills** plus **five reference compliance packs** that, together with a structured filesystem facility called `.project-state/`, turn any multi-stakeholder project into a system where routine reporting becomes a byproduct of normal work.
+
+## What's new in v2.0
+
+**v2.0 splits the suite into a generic core plus compliance packs.** Twelve skills are unchanged from v1.1. Six are abstracted (renamed and made profile-driven). Pack-specific behavior moves into compliance packs that reproduce project-type-specific experience exactly. Other packs ship for client engagements, board reporting, agile teams, and open-source projects.
+
+The single most important addition is the **stakeholder reporting matrix** — a YAML in `.project-state/reporting-matrix.yaml` that encodes "for each stakeholder group, what report at what cadence in what format on which surface." This is what generalizes the system from grant-management to multi-stakeholder reporting.
+
+See `docs/MIGRATION-V1-TO-V2.md` for the migration path from v1.x; see `CHANGELOG.md` for the full diff.
+
+## What you get
+
+- **19 skills** (`project-*`) — twelve unchanged from v1.1 + six abstracted to load behavior from pack profiles.
+- **5 reference packs** — `pic-pcais` (production), `client-services`, `board-investor`, `agile-default`, `open-source-community` (all starter).
+- **Documentation** — README, INSTALL, CHANGELOG, MIGRATION-V1-TO-V2, PACK-AUTHORING, PACK-CATALOG, REPORTING-MATRIX, plus architecture / schema / concurrency / website docs.
+- **Templates** — v2 manifest, reporting matrix template, five phase presets (grant/agile/waterfall/client-engagement/open-source), plus the website starter.
+- **Migration script** — `scripts/migrate-v1-to-v2.py` for non-destructive v1.x → v2.0 conversion.
+
+## Architecture at a glance
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  SURFACES — Slack · Gmail (drafts) · Calendar · Blog · Web  │
+├─────────────────────────────────────────────────────────────┤
+│  SKILLS — 18 project-* skills (12 unchanged + 6 abstracted) │
+│           ┌──── reads profile YAMLs from ────┐              │
+│           ▼                                   ▼              │
+│  PACKS — pic-pcais · client-services · board-investor ·     │
+│          agile-default · open-source-community              │
+│           ┌──── seeds entries into ────┐                     │
+│           ▼                             ▼                     │
+│  REPORTING MATRIX — who needs what, when, where             │
+├─────────────────────────────────────────────────────────────┤
+│  SUBSTRATE — .project-state/ on shared drive (filesystem)   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## The eighteen skills
+
+### Foundation
+| Skill | Role |
+|---|---|
+| `project-state` | The memory layer. Read/write/list/validate every entity. |
+| `project-scaffolder` | One-shot initializer. Now also seeds the reporting matrix from packs. |
+
+### Core operations
+| Skill | Role |
+|---|---|
+| `project-phase-gate` | User-defined phases via presets + pack overrides. |
+| `project-document-curator` | Classify/index/promote project documents. |
+| `project-milestone-manager` | CRUD milestones; %_complete + technical_progress. |
+| `project-status-reporter` | Weekly/SC pack/claim draft/ad-hoc status. Reads matrix entries. |
+
+### Surfaces & automation
+| Skill | Role |
+|---|---|
+| `project-orchestrator` | Calendar-aware conductor. Reads matrix, dispatches generators. |
+| `project-notifier` | Slack/Gmail (drafts)/Calendar routing. |
+| `project-review-meeting` | Generic meeting lifecycle; pack profile defines name, attendees, agenda. |
+| `project-funder-reporting` | Generic stakeholder-bound recurring reports; pack profile defines template + cadence. |
+| `project-change-register` | Material vs. non-material classification. |
+| `project-blog-publisher` | scsiwyg bridge with publication-review respect. |
+| `project-website-publisher` | Static project website with stable URLs. |
+
+### Polish
+| Skill | Role |
+|---|---|
+| `project-onboarder` | Personalized onboarding briefs. |
+| `project-ip-tracker` | Generic recipient via pack profile. |
+| `project-external-comms` | Generic external-comms review pipeline. |
+| `project-lessons` | Continuous lessons learned capture + closeout summary. |
+| `project-archive` | Generic closeout core + pack-driven items. |
+
+## The five reference packs
+
+| Pack | Maturity | For |
+|---|---|---|
+| `pic-pcais` | production | PIC-funded PCAIS consortium projects |
+| `client-services` | starter | Consulting/client engagements with customer reporting |
+| `board-investor` | starter | PE/VC-backed startups with board cadence |
+| `agile-default` | starter | Engineering teams running Scrum/Kanban |
+| `open-source-community` | starter | Community-governed OSS projects |
+
+Multiple packs can coexist on one project. See `docs/PACK-CATALOG.md` for combinations that work well.
+
+## Quick install
+
+```bash
+# 1. Clone or copy this repo to your project's shared drive
+git clone https://github.com/your-org/project-state /path/to/your-project/project-state
+# or copy the folder directly
+
+# 2. Symlink the 19 skills into ~/.claude/skills
+cd ~/.claude/skills
+for s in /path/to/your-project/project-state/skills/project-*; do
+  ln -s "$s" .
+done
+
+# 3. Choose your pack(s) — packs are already in project-state/packs/
+#    The skills will find them at runtime via .project-state/packs/
+
+# 4. Bootstrap a new project
+ask claude: "scaffold a new v2 project"
+```
+
+For detailed steps, Cowork setup, and verification checklists, see `INSTALL.md`.
+
+For migrating an existing v1.x project, see `docs/MIGRATION-V1-TO-V2.md`. About 30 minutes total.
+
+## Quick start workflows
+
+| Ask | What runs |
+|---|---|
+| "What phase are we in?" | `project-phase-gate` (uses your phase preset) |
+| "Show me the milestones" | `project-milestone-manager` |
+| "What should I do this week?" | `project-orchestrator` (reads matrix + calendar) |
+| "Draft the [stakeholder] report" | `project-funder-reporting` (uses pack profile) |
+| "Schedule the next [SC/board/QBR/retro]" | `project-review-meeting` (uses pack profile) |
+| "Seed reporting matrix from packs" | `project-scaffolder seed-matrix` |
+| "Publish to the project website" | `project-website-publisher` |
+| "Set up a new project" | `project-scaffolder` |
+
+## Documentation
+
+| Doc | What it covers |
+|---|---|
+| `README.md` | This file — overview, install, quick start |
+| `INSTALL.md` | Detailed install + verification + Cowork setup |
+| `CHANGELOG.md` | Per-version diff (v1.0 → v1.1 → v2.0) |
+| `docs/SYSTEM-ARCHITECTURE.md` | Architectural overview tying everything together |
+| `docs/STATE-FACILITY-README.md` | The `.project-state/` directory tree |
+| `docs/SCHEMA.md` | Schema reference for every entity |
+| `docs/CONCURRENCY.md` | Concurrency model (shared-drive writes) |
+| `docs/SKILLS-REFERENCE.md` | Per-skill catalog |
+| `docs/PROJECT-WEBSITE.md` | Website integration in full |
+| `docs/REPORTING-MATRIX.md` | **NEW v2.0** — the stakeholder reporting matrix in depth |
+| `docs/PACK-AUTHORING.md` | **NEW v2.0** — how to write a compliance pack |
+| `docs/PACK-CATALOG.md` | **NEW v2.0** — what ships, combinations, roadmap |
+| `docs/MIGRATION-V1-TO-V2.md` | **NEW v2.0** — five-step migration walkthrough |
+
+## Contact
+
+David Olsson · Atomic47 Labs Inc. · david@atomic47.co

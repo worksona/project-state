@@ -1,0 +1,8 @@
+id: "04-release"
+label: "Release"
+status: active
+gate_in: "RC stabilized"
+gate_out: "Released to production"
+cycles_back_to: "02-build-loops"
+entered: "2026-04-27"
+exited: ~

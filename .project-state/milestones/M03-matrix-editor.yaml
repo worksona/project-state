@@ -1,0 +1,30 @@
+id: M03-matrix-editor
+kind: milestone
+title: "Visual Reporting Matrix Editor"
+owner_org: "Worksona"
+owner_person: david-olsson-worksona
+description: |
+  Build a structured matrix-editor page in the project website that round-trips to the YAML.
+  Non-technical PLs can add/edit/remove matrix entries without touching YAML directly.
+  Deferred from v2.0 to v2.1.
+planned_start: "2026-06-01"
+planned_end: "2026-07-31"
+actual_start: ~
+actual_end: ~
+percent_complete: 0
+technical_progress: ""
+deliverables:
+  - id: D03a
+    title: "Matrix editor UI component (React)"
+    status: planned
+  - id: D03b
+    title: "YAML round-trip serializer"
+    status: planned
+  - id: D03c
+    title: "Validation in the editor (stakeholder refs, generator bindings)"
+    status: planned
+status: planned
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"

@@ -1,0 +1,15 @@
+id: R-05-scsiwyg-api-dependency
+kind: risk
+title: "Hard dependency on scsiwyg API with no local fallback"
+likelihood: medium
+impact: medium
+score: 4
+owner: david-olsson-worksona
+mitigation: "Add a local content cache that persists the last successful API response to disk. The regenerate script should snapshot blog content at build time so static exports don't depend on runtime API availability."
+contingency: "If scsiwyg goes down permanently, rewrite lib/scsiwyg.ts to read from local markdown files in a content/blog/ directory instead. Blog posts already exist as markdown in the API response body."
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

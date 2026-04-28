@@ -1,0 +1,15 @@
+id: R-04-starter-packs-incomplete
+kind: risk
+title: "Starter packs ship without declared profiles"
+likelihood: high
+impact: medium
+score: 6
+owner: david-olsson-worksona
+mitigation: "Either ship the missing profile YAMLs (e.g. agile-default.review-meeting, agile-default.phase-gate) or remove the provides.profiles entries from pack manifests. Do not declare capabilities the pack does not deliver."
+contingency: "Document clearly that starter packs require user-authored profiles before use. Add a startup validation check that warns when a loaded pack declares profiles that do not exist on disk."
+status: open
+last_reviewed: "2026-04-28"
+created: "2026-04-28T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-28T00:00:00Z"
+last_modified_by: "david@atomic47.co"

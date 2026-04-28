@@ -1,0 +1,33 @@
+id: M01-v2-release
+kind: milestone
+title: "v2.0 Release — Generic Core + Compliance Packs"
+owner_org: "Worksona"
+owner_person: david-olsson-worksona
+description: |
+  Split the suite into a funder-agnostic core (12 unchanged + 6 abstracted skills) plus pluggable
+  compliance packs. Ship the stakeholder reporting matrix, five phase presets, migration script,
+  and five reference packs (pic-pcais production, four starters).
+planned_start: "2026-04-24"
+planned_end: "2026-04-27"
+actual_start: "2026-04-24"
+actual_end: "2026-04-27"
+percent_complete: 100
+technical_progress: "Released. 18 skills, 5 packs, full docs, migration script."
+deliverables:
+  - id: D01a
+    title: "Stakeholder reporting matrix"
+    status: delivered
+  - id: D01b
+    title: "Pack system + 5 reference packs"
+    status: delivered
+  - id: D01c
+    title: "Migration script (v1→v2)"
+    status: delivered
+  - id: D01d
+    title: "Phase preset library (5 presets)"
+    status: delivered
+status: complete
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"

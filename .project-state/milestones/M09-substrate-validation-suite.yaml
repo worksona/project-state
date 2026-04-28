@@ -1,0 +1,31 @@
+id: M09-substrate-validation-suite
+kind: milestone
+title: "Substrate Validation & Health Check Suite"
+owner_org: "Worksona"
+owner_person: david-olsson-worksona
+description: |
+  Comprehensive validation tooling for .project-state/. Today project-state validates
+  individual entities on write. This milestone adds whole-substrate health checks:
+  cross-reference integrity, orphaned files, schema drift detection, stale lockfiles,
+  and a project-health score.
+planned_start: "2026-05-15"
+planned_end: "2026-06-30"
+actual_start: ~
+actual_end: ~
+percent_complete: 0
+technical_progress: ""
+deliverables:
+  - id: D09a
+    title: "Cross-reference integrity checker (stakeholder refs, milestone refs, person refs)"
+    status: planned
+  - id: D09b
+    title: "Schema drift detector (flag entities missing required fields)"
+    status: planned
+  - id: D09c
+    title: "Health score computation + dashboard widget"
+    status: planned
+status: planned
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"

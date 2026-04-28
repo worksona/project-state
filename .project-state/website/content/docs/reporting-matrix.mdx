@@ -1,0 +1,201 @@
+---
+title: "Reporting Matrix"
+description: "The stakeholder reporting matrix — the central v2.0 concept"
+visibility: public
+last_modified: "2026-04-27"
+---
+
+The single most important addition in v2.0. This document explains what it is, why it exists, how to author it, and how the orchestrator + skills consume it.
+
+## What it is
+
+A YAML file at `.project-state/reporting-matrix.yaml` that encodes the answer to: *"For each stakeholder group this project communicates with, what report do they get, at what cadence, in what format, by which surface, and which skill produces it?"*
+
+Each entry binds five things: a stakeholder, a report kind, a cadence, a format-and-surface, and a generator. The orchestrator scans the matrix on its scheduled tick and dispatches each entry to its named generator at the configured cadence.
+
+## Why it exists
+
+In v1.x the matrix was implicit: PIC was the funder, the cadences were quarterly (claim) and quarterly (SC), and the formats were fixed by PIC. So the system could hard-code them.
+
+For any project that's not a single-funder PIC consortium, the matrix can't be hard-coded. A typical multi-stakeholder project has 5+ groups (customers, investors, board, internal, regulators, partners), each wanting different reports at different cadences in different formats. The matrix encodes that as data.
+
+This is the change that turns the system from a grant-management tool into a multi-stakeholder reporting tool that grants happen to be one case of.
+
+## Schema
+
+```yaml
+schema_version: 2
+manifest_kind: reporting_matrix
+
+entries:
+  - id: <unique-entry-id>
+    stakeholder_group: <id-from-manifest.stakeholders>
+    report: <human-readable report kind>
+    cadence: <cadence object — see below>
+    format: <md | docx | xlsx | pdf | html | mdx | meeting>
+    surface: <surface or combination — see below>
+    generator: <project-* skill that produces this report>
+    profile: <optional — pack profile that configures the generator>
+    description: <optional — one-paragraph explanation>
+    optional: <optional bool — if true, entry is opt-in; not auto-dispatched>
+```
+
+## Cadence kinds
+
+```yaml
+# Weekly
+cadence: { kind: weekly, day: monday, lead_time_hours: 8 }
+
+# Bi-weekly (alternating Fridays)
+cadence: { kind: bi-weekly, day: friday-odd-week }   # or friday-even-week
+
+# Monthly (with various alignment options)
+cadence: { kind: monthly, day_of_month: 1 }
+cadence: { kind: monthly, day_of_month: "last-business-day" }
+cadence: { kind: monthly, day_of_month: "first-monday" }
+
+# Quarterly
+cadence: { kind: quarterly, alignment: "first-month-of-quarter" }
+cadence: { kind: quarterly, days_of_year: ["04-20", "07-20", "10-20", "01-20"], lead_time_days: 14 }
+
+# Annual
+cadence: { kind: annual, due_month: "04" }
+
+# Sprint-aligned (for agile pack)
+cadence: { kind: sprint-aligned, timing: "last-day-of-sprint" }
+
+# Ad-hoc — fires on a substrate event
+cadence: { kind: ad-hoc, on_event: "milestone.completed" }
+cadence: { kind: ad-hoc, on_event: "ip.disclosure.created" }
+
+# Post-event — fires within N business days of an event
+cadence: { kind: post-event, on: "sc-meeting.held", within_business_days: 5 }
+
+# On-publish — fires when a path changes
+cadence: { kind: on-publish, trigger: "documents/published/" }
+```
+
+All cadences support `lead_time_days` or `lead_time_hours` to control when the draft is produced ahead of the deadline.
+
+## Surfaces
+
+Single surface:
+
+```yaml
+surface: gmail.draft
+surface: slack
+surface: calendar.invite
+surface: blog
+surface: website
+```
+
+Combinations (the artifact lands on multiple surfaces):
+
+```yaml
+surface: gmail.draft + slack
+surface: calendar.invite + gmail.draft
+surface: gmail.draft + signoff-form
+```
+
+## Generators
+
+A generator is the skill that produces the report. Each entry names exactly one:
+
+- `project-status-reporter` — generic status reports (weekly, monthly, ad-hoc)
+- `project-funder-reporting` — recurring stakeholder reports per a profile (claim, invoice, board pack)
+- `project-review-meeting` — meeting packs and minutes per a profile (SC, board, QBR, retro)
+- `project-blog-publisher` — narrative blog posts
+- `project-website-publisher` — reference docs at stable URLs
+- `project-change-register` — change orders for stakeholder approval
+- `project-ip-tracker` — IP disclosures routed to a recipient
+
+## Example: Ai26.10 with a customer pack added
+
+```yaml
+entries:
+  # Internal team (always)
+  - id: monday-tracker-email
+    stakeholder_group: internal.team
+    cadence: { kind: weekly, day: monday }
+    format: md
+    surface: gmail.draft + slack
+    generator: project-status-reporter
+
+  # PIC funder (from pic-pcais pack)
+  - id: pic-quarterly-claim
+    stakeholder_group: funder.pic
+    cadence: { kind: quarterly, days: ["04-20", "07-20", "10-20", "01-20"], lead_time_days: 14 }
+    format: xlsx
+    surface: gmail.draft
+    generator: project-funder-reporting
+    profile: pic-pcais.funder-reporting
+
+  - id: sc-meeting-pack
+    stakeholder_group: funder.pic
+    cadence: { kind: quarterly, alignment: "first-month-of-quarter" }
+    format: docx
+    surface: calendar.invite + gmail.draft
+    generator: project-review-meeting
+    profile: pic-pcais.review-meeting
+
+  # Consortium
+  - id: bi-weekly-stakeholder-update
+    stakeholder_group: consortium.all
+    cadence: { kind: bi-weekly, day: friday-odd-week }
+    format: md
+    surface: gmail.draft
+    generator: project-status-reporter
+
+  # Customer (from client-services pack)
+  - id: monthly-customer-invoice
+    stakeholder_group: customer.crush_commercial
+    cadence: { kind: monthly, day: "last-business-day", lead_time_days: 5 }
+    format: pdf
+    surface: gmail.draft
+    generator: project-funder-reporting
+    profile: client-services.funder-reporting
+
+  - id: quarterly-business-review
+    stakeholder_group: customer.crush_commercial
+    cadence: { kind: quarterly, alignment: "month-after-quarter-end" }
+    format: docx + meeting
+    surface: calendar.invite + gmail.draft
+    generator: project-review-meeting
+    profile: client-services.review-meeting
+
+  # Public (website)
+  - id: reference-docs
+    stakeholder_group: public
+    cadence: { kind: on-publish, trigger: "documents/published/" }
+    format: mdx
+    surface: website
+    generator: project-website-publisher
+```
+
+This matrix encodes the full multi-stakeholder reporting story for one project. The orchestrator runs through it on every tick; status-reporter, funder-reporting, review-meeting, and website-publisher each pick up their entries and produce drafts on schedule.
+
+## Authoring workflow
+
+1. **Load packs first.** Edit `manifest.yaml` to set `project.packs_loaded: [pack-id, ...]`.
+2. **Seed from packs.** Run `ask claude: "seed reporting matrix from packs"` (or invoke `project-scaffolder seed-matrix`). This copies the `reporting-matrix-defaults.yaml` from each loaded pack into your project's matrix.
+3. **Customize.** Adjust cadences, recipients, optional flags. Add entries that don't come from packs. Remove entries you don't need.
+4. **Validate.** Run `ask claude: "validate reporting matrix"` (or `project-state validate`) to check schema, stakeholder ID references, generator/profile bindings.
+5. **Live.** The orchestrator picks it up on its next scheduled tick. Reports start drafting per cadence.
+
+## Validation rules
+
+- Every `stakeholder_group` must reference a `stakeholder` defined in `manifest.yaml`.
+- Every `generator` must be an installed skill.
+- Every `profile` must reference a profile shipped by a loaded pack.
+- `cadence.kind` must be one of the supported kinds.
+- `format` must be one of the supported formats.
+- Two entries with the same `id` is an error.
+
+## Why YAML and not a database
+
+Same reason the rest of the substrate is filesystem-based: the team has it offline, auditors can read it, future maintainers can grep it, no SaaS to subscribe to, no API to deprecate. The matrix is project memory, and project memory should be plain text.
+
+## Future direction
+
+The YAML matrix is fine for technical Project Leads to maintain by hand. For broader adoption, future versions might add a structured matrix-editor page in the project website that round-trips to the YAML. Out of scope for v2.0; deferred to v2.1+.
+

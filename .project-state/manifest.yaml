@@ -1,0 +1,61 @@
+schema_version: 2
+manifest_kind: project
+
+project:
+  name: "project-state"
+  long_name: "The project-* skill suite — 19 skills + 5 compliance packs for project ops"
+  one_liner: |
+    Generic operational substrate for multi-stakeholder projects. Provides 18 project-* skills
+    and 5 compliance packs that turn any project into a system where routine reporting is a
+    byproduct of normal work.
+  kind: "open_source"
+  start_date: "2026-04-24"
+  end_date: ~
+  packs_loaded: ["agile-default"]
+  reporting_matrix_path: "reporting-matrix.yaml"
+
+stakeholders:
+  - id: internal.team
+    organization: "Worksona"
+    role: "Project Team"
+    contacts:
+      lead: "David Olsson <david@atomic47.co>"
+
+phases:
+  preset: "agile-default"
+  custom_path: ~
+  current_phase: "04-release"
+
+surfaces:
+  slack:
+    enabled: false
+  gmail:
+    enabled: false
+    always_draft: true
+  google_calendar:
+    enabled: false
+  blog:
+    enabled: true
+    site_slug: "project-state"
+    site_url: "https://www.scsiwyg.com/project-state"
+    publication_review_required: false
+  website:
+    enabled: true
+    framework: "nextjs"
+    hosting: "vercel"
+    production_url: "https://project-state-docs.vercel.app"
+    auto_deploy_on_publish: true
+    require_review_for_public: false
+    default_visibility: "public"
+
+concurrency:
+  model: "shared-drive"
+  write_rules: "file-per-entity, frontmatter timestamps, advisory lockfiles, append-only logs"
+  lock_ttl_seconds: 300
+
+meta:
+  schema_version: 2
+  created: "2026-04-27T00:00:00Z"
+  created_by: "david@atomic47.co"
+  last_modified: "2026-04-27T00:00:00Z"
+  last_modified_by: "david@atomic47.co"

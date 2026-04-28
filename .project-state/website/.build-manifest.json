@@ -1,0 +1,17 @@
+{
+  "generated": "2026-04-27T00:02:00Z",
+  "docs": {
+    "changelog.mdx": "fc2447ee17880ab0",
+    "concurrency.mdx": "bbdc4e7a929b9329",
+    "install.mdx": "cee664a257fb2020",
+    "migration-v1-to-v2.mdx": "164e5ca2c4df8178",
+    "pack-authoring.mdx": "bfdd7bd020026b4a",
+    "pack-catalog.mdx": "7b262aaf36fb2b57",
+    "readme.mdx": "ffabe5208e7c526e",
+    "reporting-matrix.mdx": "b09c04054a6ce75e",
+    "schema.mdx": "85e792d02eb3924c",
+    "skills-reference.mdx": "c3d88da03e900a9c",
+    "state-facility.mdx": "238db64bc12161ca",
+    "system-architecture.mdx": "e76601efebf44025"
+  }
+}

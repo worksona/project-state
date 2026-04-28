@@ -1,0 +1,84 @@
+docs:
+  - slug: readme
+    title: "project-state"
+    description: "Overview, architecture, quick install, and quick start workflows"
+    source_path: documents/published/readme.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: install
+    title: "Install Guide"
+    description: "Step-by-step install for fresh projects and v1.x migrations"
+    source_path: documents/published/install.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: changelog
+    title: "Changelog"
+    description: "Per-version diff: v1.0, v1.1, v2.0"
+    source_path: documents/published/changelog.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: system-architecture
+    title: "System Architecture"
+    description: "The three layers, weekly flow, surface model, and design principles"
+    source_path: documents/published/system-architecture.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: skills-reference
+    title: "Skills Reference"
+    description: "All 18 project-* skills — what they read, write, and trigger on"
+    source_path: documents/published/skills-reference.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: reporting-matrix
+    title: "Reporting Matrix"
+    description: "The stakeholder reporting matrix — the central v2.0 concept"
+    source_path: documents/published/reporting-matrix.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: pack-authoring
+    title: "Pack Authoring Guide"
+    description: "How to write a compliance pack — profiles, templates, and matrix defaults"
+    source_path: documents/published/pack-authoring.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: pack-catalog
+    title: "Pack Catalog"
+    description: "Shipped packs, combinations, and the roadmap for future packs"
+    source_path: documents/published/pack-catalog.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: schema
+    title: "Schema Reference"
+    description: "YAML entity shapes for milestones, decisions, risks, changes, claims, and more"
+    source_path: documents/published/schema.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: concurrency
+    title: "Concurrency Model"
+    description: "File-per-entity, advisory lockfiles, append-only logs — shared-drive write rules"
+    source_path: documents/published/concurrency.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: state-facility
+    title: "State Facility"
+    description: "The .project-state/ directory tree explained"
+    source_path: documents/published/state-facility.md
+    surfaces: [website]
+    visibility: public
+
+  - slug: migration-v1-to-v2
+    title: "Migration Guide (v1 to v2)"
+    description: "Five-step walkthrough for migrating an existing v1.x project to v2.0"
+    source_path: documents/published/migration-v1-to-v2.md
+    surfaces: [website]
+    visibility: public

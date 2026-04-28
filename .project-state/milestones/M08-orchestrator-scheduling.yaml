@@ -1,0 +1,30 @@
+id: M08-orchestrator-scheduling
+kind: milestone
+title: "Orchestrator Scheduling + Cron Integration"
+owner_org: "Worksona"
+owner_person: david-olsson-worksona
+description: |
+  Make the orchestrator self-driving. Today it runs on-demand ("what should I do this week?").
+  Add cron-based scheduling so it fires on its own cadence, reads the matrix, and queues
+  draft generation without human initiation. Drafts still require human review before send.
+planned_start: "2026-06-15"
+planned_end: "2026-08-15"
+actual_start: ~
+actual_end: ~
+percent_complete: 0
+technical_progress: ""
+deliverables:
+  - id: D08a
+    title: "Cron integration (launchd/systemd/cloud scheduler)"
+    status: planned
+  - id: D08b
+    title: "Matrix tick engine (scan entries, compute due dates)"
+    status: planned
+  - id: D08c
+    title: "Draft queue with notification on completion"
+    status: planned
+status: planned
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"

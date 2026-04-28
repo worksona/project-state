@@ -1,0 +1,30 @@
+id: M06-compliance-packs-wave2
+kind: milestone
+title: "Compliance Packs Wave 2 — Industry & Regulatory"
+owner_org: "Worksona"
+owner_person: david-olsson-worksona
+description: |
+  Second wave of compliance packs for industry and regulatory frameworks:
+  soc2-evidence, iso-27001, eu-horizon. These serve different audiences
+  (audit, compliance, EU research) and validate the pack system's generality.
+planned_start: "2026-10-01"
+planned_end: "2026-12-31"
+actual_start: ~
+actual_end: ~
+percent_complete: 0
+technical_progress: ""
+deliverables:
+  - id: D06a
+    title: "soc2-evidence pack (SOC2 audit evidence collection)"
+    status: planned
+  - id: D06b
+    title: "iso-27001 pack (ISO 27001 control attestation)"
+    status: planned
+  - id: D06c
+    title: "eu-horizon pack (EU Horizon periodic + final reports)"
+    status: planned
+status: planned
+created: "2026-04-27T00:00:00Z"
+created_by: "david@atomic47.co"
+last_modified: "2026-04-27T00:00:00Z"
+last_modified_by: "david@atomic47.co"
