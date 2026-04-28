@@ -1,0 +1,43 @@
+[
+  {
+    "date": "2026-04-28",
+    "dirName": "Baseline-Reports-2026-04-28",
+    "files": [
+      {
+        "name": "00-Baseline-Reports-Index.docx",
+        "format": "docx",
+        "sizeKB": 37
+      },
+      {
+        "name": "01-Project-State-Tracker-v1.0.xlsx",
+        "format": "xlsx",
+        "sizeKB": 19
+      },
+      {
+        "name": "02-Project-Plan-and-Timeline.docx",
+        "format": "docx",
+        "sizeKB": 38
+      },
+      {
+        "name": "03-Risk-Register.docx",
+        "format": "docx",
+        "sizeKB": 40
+      },
+      {
+        "name": "04-Milestone-Detailed-Specs.docx",
+        "format": "docx",
+        "sizeKB": 39
+      },
+      {
+        "name": "05-Architecture-Overview.docx",
+        "format": "docx",
+        "sizeKB": 38
+      },
+      {
+        "name": "06-Roadmap-and-KPIs.docx",
+        "format": "docx",
+        "sizeKB": 37
+      }
+    ]
+  }
+]

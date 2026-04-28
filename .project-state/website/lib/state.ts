@@ -2,8 +2,29 @@ import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 
-/** Root of the .project-state/ directory (one level up from website/) */
+/**
+ * State accessor layer.
+ *
+ * Reads from data/ (build-time snapshot) first, falling back to the live
+ * .project-state/ parent directory. Run `node scripts/snapshot-state.js`
+ * before `next build` to populate data/.
+ */
+
+const DATA_DIR = path.join(process.cwd(), 'data');
 const STATE_ROOT = path.join(process.cwd(), '..');
+
+function hasSnapshot(): boolean {
+  return fs.existsSync(path.join(DATA_DIR, 'manifest.json'));
+}
+
+function readSnapshot<T = any>(filename: string): T | null {
+  try {
+    const raw = fs.readFileSync(path.join(DATA_DIR, filename), 'utf-8');
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
+}
 
 function readYaml<T = any>(filePath: string): T | null {
   try {
@@ -162,50 +183,6 @@ export interface ActivityEvent {
   url?: string;
 }
 
-// --- Accessors ---
-
-export function getManifest(): Manifest | null {
-  return readYaml<Manifest>(path.join(STATE_ROOT, 'manifest.yaml'));
-}
-
-export function getState(): ProjectState | null {
-  return readJson<ProjectState>(path.join(STATE_ROOT, 'state.json'));
-}
-
-export function getMilestones(): Milestone[] {
-  const milestones = readAllYamlInDir<Milestone>(path.join(STATE_ROOT, 'milestones'));
-  return milestones.sort((a, b) => {
-    const idA = parseInt(a.id.replace(/\D/g, '') || '0');
-    const idB = parseInt(b.id.replace(/\D/g, '') || '0');
-    return idA - idB;
-  });
-}
-
-export function getMilestone(id: string): Milestone | null {
-  const dir = path.join(STATE_ROOT, 'milestones');
-  if (!fs.existsSync(dir)) return null;
-  const files = fs.readdirSync(dir).filter(f => f.endsWith('.yaml'));
-  for (const file of files) {
-    const m = readYaml<Milestone>(path.join(dir, file));
-    if (m && m.id === id) return m;
-  }
-  return null;
-}
-
-export function getPeople(): Person[] {
-  return readAllYamlInDir<Person>(path.join(STATE_ROOT, 'people'));
-}
-
-export function getDecisions(): Decision[] {
-  const decisions = readAllYamlInDir<Decision>(path.join(STATE_ROOT, 'decisions'));
-  return decisions.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-}
-
-export function getRisks(): Risk[] {
-  const risks = readAllYamlInDir<Risk>(path.join(STATE_ROOT, 'risks'));
-  return risks.sort((a, b) => (b.score || 0) - (a.score || 0));
-}
-
 export interface BaselineReport {
   slug: string;
   title: string;
@@ -219,7 +196,65 @@ export interface BaselineBundle {
   files: { name: string; format: string; sizeKB: number }[];
 }
 
+// --- Accessors ---
+
+export function getManifest(): Manifest | null {
+  if (hasSnapshot()) return readSnapshot<Manifest>('manifest.json');
+  return readYaml<Manifest>(path.join(STATE_ROOT, 'manifest.yaml'));
+}
+
+export function getState(): ProjectState | null {
+  if (hasSnapshot()) return readSnapshot<ProjectState>('state.json');
+  return readJson<ProjectState>(path.join(STATE_ROOT, 'state.json'));
+}
+
+export function getMilestones(): Milestone[] {
+  if (hasSnapshot()) {
+    const milestones = readSnapshot<Milestone[]>('milestones.json') || [];
+    return milestones.sort((a, b) => {
+      const idA = parseInt(a.id.replace(/\D/g, '') || '0');
+      const idB = parseInt(b.id.replace(/\D/g, '') || '0');
+      return idA - idB;
+    });
+  }
+  const milestones = readAllYamlInDir<Milestone>(path.join(STATE_ROOT, 'milestones'));
+  return milestones.sort((a, b) => {
+    const idA = parseInt(a.id.replace(/\D/g, '') || '0');
+    const idB = parseInt(b.id.replace(/\D/g, '') || '0');
+    return idA - idB;
+  });
+}
+
+export function getMilestone(id: string): Milestone | null {
+  const milestones = getMilestones();
+  return milestones.find(m => m.id === id) || null;
+}
+
+export function getPeople(): Person[] {
+  if (hasSnapshot()) return readSnapshot<Person[]>('people.json') || [];
+  return readAllYamlInDir<Person>(path.join(STATE_ROOT, 'people'));
+}
+
+export function getDecisions(): Decision[] {
+  if (hasSnapshot()) {
+    const decisions = readSnapshot<Decision[]>('decisions.json') || [];
+    return decisions.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  }
+  const decisions = readAllYamlInDir<Decision>(path.join(STATE_ROOT, 'decisions'));
+  return decisions.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+}
+
+export function getRisks(): Risk[] {
+  if (hasSnapshot()) {
+    const risks = readSnapshot<Risk[]>('risks.json') || [];
+    return risks.sort((a, b) => (b.score || 0) - (a.score || 0));
+  }
+  const risks = readAllYamlInDir<Risk>(path.join(STATE_ROOT, 'risks'));
+  return risks.sort((a, b) => (b.score || 0) - (a.score || 0));
+}
+
 export function getBaselineReports(): BaselineReport[] {
+  if (hasSnapshot()) return readSnapshot<BaselineReport[]>('baseline-reports.json') || [];
   const dir = path.join(STATE_ROOT, 'reports', 'adhoc');
   try {
     if (!fs.existsSync(dir)) return [];
@@ -241,6 +276,10 @@ export function getBaselineReports(): BaselineReport[] {
 }
 
 export function getBaselineBundles(): BaselineBundle[] {
+  if (hasSnapshot()) {
+    const bundles = readSnapshot<BaselineBundle[]>('baseline-bundles.json') || [];
+    return bundles.sort((a, b) => b.date.localeCompare(a.date));
+  }
   const baseDir = path.join(STATE_ROOT, 'reports', 'baseline');
   try {
     if (!fs.existsSync(baseDir)) return [];
@@ -272,6 +311,7 @@ export function getBaselineBundles(): BaselineBundle[] {
 }
 
 export function getPhases(): Phase[] {
+  if (hasSnapshot()) return readSnapshot<Phase[]>('phases.json') || [];
   const phasesDir = path.join(STATE_ROOT, 'phases');
   try {
     if (!fs.existsSync(phasesDir)) return [];
@@ -287,10 +327,15 @@ export function getPhases(): Phase[] {
 }
 
 export function getReportingMatrix(): ReportingMatrix | null {
+  if (hasSnapshot()) return readSnapshot<ReportingMatrix>('reporting-matrix.json');
   return readYaml<ReportingMatrix>(path.join(STATE_ROOT, 'reporting-matrix.yaml'));
 }
 
 export function getActivityLog(limit = 50): ActivityEvent[] {
+  if (hasSnapshot()) {
+    const events = readSnapshot<ActivityEvent[]>('activity-log.json') || [];
+    return events.slice(-limit).reverse();
+  }
   const logPath = path.join(STATE_ROOT, 'logs', 'activity.ndjson');
   try {
     if (!fs.existsSync(logPath)) return [];

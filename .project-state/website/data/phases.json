@@ -1,0 +1,40 @@
+[
+  {
+    "id": "01-discovery",
+    "label": "Discovery",
+    "status": "completed",
+    "gate_in": null,
+    "gate_out": "Initial scope agreed; first sprint queue defined",
+    "entered": "2026-04-24",
+    "exited": "2026-04-24"
+  },
+  {
+    "id": "02-build-loops",
+    "label": "Build (recurring sprint loops)",
+    "status": "completed",
+    "gate_in": "Discovery complete",
+    "gate_out": "Release candidate ready",
+    "recurring": true,
+    "entered": "2026-04-24",
+    "exited": "2026-04-27"
+  },
+  {
+    "id": "03-hardening",
+    "label": "Hardening",
+    "status": "completed",
+    "gate_in": "Release candidate ready",
+    "gate_out": "RC stabilized; release notes prepared",
+    "entered": "2026-04-27",
+    "exited": "2026-04-27"
+  },
+  {
+    "id": "04-release",
+    "label": "Release",
+    "status": "active",
+    "gate_in": "RC stabilized",
+    "gate_out": "Released to production",
+    "cycles_back_to": "02-build-loops",
+    "entered": "2026-04-27",
+    "exited": null
+  }
+]

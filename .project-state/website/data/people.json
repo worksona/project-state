@@ -1,0 +1,15 @@
+[
+  {
+    "id": "david-olsson-worksona",
+    "kind": "person",
+    "full_name": "David Olsson",
+    "organization": "Worksona",
+    "title": null,
+    "email": "david@atomic47.co",
+    "role_on_project": "Project Lead",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  }
+]

@@ -1,0 +1,238 @@
+[
+  {
+    "ts": "2026-04-27T00:00:00Z",
+    "actor": "david@atomic47.co",
+    "event": "project.scaffolded",
+    "detail": "Scaffolded .project-state/ for project-state v2.0. Pack: agile-default. Phase preset: agile-default. Starting phase: 04-release."
+  },
+  {
+    "ts": "2026-04-27T00:01:00Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M01-v2-release",
+    "title": "v2.0 Release — Generic Core + Compliance Packs"
+  },
+  {
+    "ts": "2026-04-27T00:01:01Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M02-starter-pack-hardening",
+    "title": "Harden Starter Packs to Production"
+  },
+  {
+    "ts": "2026-04-27T00:01:02Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M03-matrix-editor",
+    "title": "Visual Reporting Matrix Editor"
+  },
+  {
+    "ts": "2026-04-27T00:01:03Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M04-pack-registry",
+    "title": "Pack Registry — Install by Name"
+  },
+  {
+    "ts": "2026-04-27T00:01:04Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M05-compliance-packs-wave1",
+    "title": "Compliance Packs Wave 1 — Academic & Federal Research"
+  },
+  {
+    "ts": "2026-04-27T00:01:05Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M06-compliance-packs-wave2",
+    "title": "Compliance Packs Wave 2 — Industry & Regulatory"
+  },
+  {
+    "ts": "2026-04-27T00:01:06Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M07-multi-project-dashboard",
+    "title": "Multi-Project Dashboard"
+  },
+  {
+    "ts": "2026-04-27T00:01:07Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M08-orchestrator-scheduling",
+    "title": "Orchestrator Scheduling + Cron Integration"
+  },
+  {
+    "ts": "2026-04-27T00:01:08Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M09-substrate-validation-suite",
+    "title": "Substrate Validation & Health Check Suite"
+  },
+  {
+    "ts": "2026-04-27T00:01:09Z",
+    "actor": "david@atomic47.co",
+    "event": "milestone.created",
+    "id": "M10-v21-release",
+    "title": "v2.1 Release"
+  },
+  {
+    "ts": "2026-04-27T00:02:00Z",
+    "actor": "david@atomic47.co",
+    "event": "website.initialized",
+    "detail": "Scaffolded website/ from template. 12 docs promoted to published/ and regenerated as MDX."
+  },
+  {
+    "ts": "2026-04-27T00:03:00Z",
+    "actor": "david@atomic47.co",
+    "event": "website.deployed",
+    "url": "https://project-state-docs.vercel.app",
+    "detail": "First production deploy. 12 docs, 15 pages total."
+  },
+  {
+    "ts": "2026-04-28T00:00:00Z",
+    "actor": "david@atomic47.co",
+    "event": "website.deployed",
+    "url": "https://project-state-docs.vercel.app",
+    "detail": "Full project website v2: dashboard, milestones (10), blog (6 posts from scsiwyg), wiki, docs (12), team, decisions, about. 32 pages total."
+  },
+  {
+    "ts": "2026-04-28T01:00:01Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-01",
+    "title": "Single maintainer — bus factor of one"
+  },
+  {
+    "ts": "2026-04-28T01:00:02Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-02",
+    "title": "Orchestrator SKILL.md contains stale v1 skill references"
+  },
+  {
+    "ts": "2026-04-28T01:00:03Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-03",
+    "title": "Zero automated tests or CI/CD pipeline"
+  },
+  {
+    "ts": "2026-04-28T01:00:04Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-04",
+    "title": "Starter packs ship without declared profiles"
+  },
+  {
+    "ts": "2026-04-28T01:00:05Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-05",
+    "title": "Hard dependency on scsiwyg API with no local fallback"
+  },
+  {
+    "ts": "2026-04-28T01:00:06Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-06",
+    "title": "Compliance pack research depth — Wave 1 and Wave 2 are aspirational"
+  },
+  {
+    "ts": "2026-04-28T01:00:07Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-07",
+    "title": "Overlapping milestone timeline for a single person — 9 milestones in 5 months"
+  },
+  {
+    "ts": "2026-04-28T01:00:08Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-08",
+    "title": "Silent error swallowing in website state and API layers"
+  },
+  {
+    "ts": "2026-04-28T01:00:09Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-09",
+    "title": "MCP tool stability and Claude Code coupling"
+  },
+  {
+    "ts": "2026-04-28T01:00:10Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-10",
+    "title": "No contributor pipeline or community infrastructure"
+  },
+  {
+    "ts": "2026-04-28T01:00:11Z",
+    "actor": "david@atomic47.co",
+    "event": "risk.created",
+    "id": "R-11",
+    "title": "Website state loading uses fragile relative path assumption"
+  },
+  {
+    "ts": "2026-04-28T02:00:00Z",
+    "actor": "david@atomic47.co",
+    "event": "report.generated",
+    "id": "baseline-milestone-report",
+    "detail": "Milestone baseline report: 10 milestones (1 complete, 9 planned), 30 deliverables, priority tiers defined."
+  },
+  {
+    "ts": "2026-04-28T02:00:01Z",
+    "actor": "david@atomic47.co",
+    "event": "report.generated",
+    "id": "baseline-risk-register",
+    "detail": "Risk register baseline: 11 risks (3 critical, 5 high, 3 medium). All open."
+  },
+  {
+    "ts": "2026-04-28T02:00:02Z",
+    "actor": "david@atomic47.co",
+    "event": "report.generated",
+    "id": "baseline-roadmap-timeline",
+    "detail": "Roadmap timeline baseline: 5 phases spanning Apr-Dec 2026. Critical path: M01→M02+M09→M08→M10."
+  },
+  {
+    "ts": "2026-04-28T02:00:03Z",
+    "actor": "david@atomic47.co",
+    "event": "report.generated",
+    "id": "baseline-reporting-matrix",
+    "detail": "Reporting matrix baseline: 3 entries, 2 surfaces (blog, website), 3 generator bindings."
+  },
+  {
+    "ts": "2026-04-28T02:00:04Z",
+    "actor": "david@atomic47.co",
+    "event": "report.generated",
+    "id": "baseline-project-identity",
+    "detail": "Project identity baseline: project-state v2.0, open source, agile-default pack, 18 skills, 5 packs."
+  },
+  {
+    "ts": "2026-04-28T02:01:00Z",
+    "actor": "david@atomic47.co",
+    "event": "blog.published",
+    "id": "baseline-reports-2026-04-28",
+    "detail": "Published consolidated baseline reports to scsiwyg blog: milestones, risks, roadmap, reporting matrix, project identity."
+  },
+  {
+    "ts": "2026-04-28T03:00:00Z",
+    "actor": "david@atomic47.co",
+    "event": "website.deployed",
+    "url": "https://project-state-docs.vercel.app",
+    "detail": "Fixed scsiwyg API integration (wrong base URL). Added /risks page (11 risks with heat map). Added /reports page (5 baseline reports). Blog now pulling 7 posts from scsiwyg. Wiki pages fixed to use list endpoint."
+  },
+  {
+    "ts": "2026-04-28T00:00:00Z",
+    "actor": "david@atomic47.co",
+    "event": "report.generated",
+    "id": "tracking-suite-2026-04-28",
+    "summary": "Generated milestone-tracker.csv, risk-register.csv, deliverables-tracker.csv, project-dashboard.md in tracking/"
+  },
+  {
+    "ts": "2026-04-28T06:00:00Z",
+    "actor": "david@atomic47.co",
+    "event": "report.generated",
+    "id": "baseline-bundle-2026-04-28",
+    "summary": "Generated Baseline-Reports-2026-04-28 bundle: 6 docx + 1 xlsx via project-doc-suite-generator"
+  }
+]

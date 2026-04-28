@@ -1,0 +1,372 @@
+[
+  {
+    "id": "M01-v2-release",
+    "kind": "milestone",
+    "title": "v2.0 Release — Generic Core + Compliance Packs",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Split the suite into a funder-agnostic core (12 unchanged + 6 abstracted skills) plus pluggable\ncompliance packs. Ship the stakeholder reporting matrix, five phase presets, migration script,\nand five reference packs (pic-pcais production, four starters).\n",
+    "planned_start": "2026-04-24",
+    "planned_end": "2026-04-27",
+    "actual_start": "2026-04-24",
+    "actual_end": "2026-04-27",
+    "percent_complete": 100,
+    "technical_progress": "Released. 18 skills, 5 packs, full docs, migration script.",
+    "deliverables": [
+      {
+        "id": "D01a",
+        "title": "Stakeholder reporting matrix",
+        "status": "delivered"
+      },
+      {
+        "id": "D01b",
+        "title": "Pack system + 5 reference packs",
+        "status": "delivered"
+      },
+      {
+        "id": "D01c",
+        "title": "Migration script (v1→v2)",
+        "status": "delivered"
+      },
+      {
+        "id": "D01d",
+        "title": "Phase preset library (5 presets)",
+        "status": "delivered"
+      }
+    ],
+    "status": "complete",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  },
+  {
+    "id": "M02-starter-pack-hardening",
+    "kind": "milestone",
+    "title": "Harden Starter Packs to Production",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Promote the four starter packs (client-services, board-investor, agile-default, open-source-community)\nfrom starter to production maturity. Requires real-project validation for each, complete profile\ncoverage, and tested reporting-matrix-defaults.\n",
+    "planned_start": "2026-05-01",
+    "planned_end": "2026-06-30",
+    "actual_start": null,
+    "actual_end": null,
+    "percent_complete": 0,
+    "technical_progress": "",
+    "deliverables": [
+      {
+        "id": "D02a",
+        "title": "client-services pack → production",
+        "status": "planned"
+      },
+      {
+        "id": "D02b",
+        "title": "board-investor pack → production",
+        "status": "planned"
+      },
+      {
+        "id": "D02c",
+        "title": "agile-default pack → production",
+        "status": "planned"
+      },
+      {
+        "id": "D02d",
+        "title": "open-source-community pack → production",
+        "status": "planned"
+      }
+    ],
+    "status": "planned",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  },
+  {
+    "id": "M03-matrix-editor",
+    "kind": "milestone",
+    "title": "Visual Reporting Matrix Editor",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Build a structured matrix-editor page in the project website that round-trips to the YAML.\nNon-technical PLs can add/edit/remove matrix entries without touching YAML directly.\nDeferred from v2.0 to v2.1.\n",
+    "planned_start": "2026-06-01",
+    "planned_end": "2026-07-31",
+    "actual_start": null,
+    "actual_end": null,
+    "percent_complete": 0,
+    "technical_progress": "",
+    "deliverables": [
+      {
+        "id": "D03a",
+        "title": "Matrix editor UI component (React)",
+        "status": "planned"
+      },
+      {
+        "id": "D03b",
+        "title": "YAML round-trip serializer",
+        "status": "planned"
+      },
+      {
+        "id": "D03c",
+        "title": "Validation in the editor (stakeholder refs, generator bindings)",
+        "status": "planned"
+      }
+    ],
+    "status": "planned",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  },
+  {
+    "id": "M04-pack-registry",
+    "kind": "milestone",
+    "title": "Pack Registry — Install by Name",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Lightweight pack registry (git-based or npm-style) so packs can be installed by name\nrather than zip-file distribution. Versioned, with compatible_core constraint enforcement.\nDeferred from v2.0 to v2.1+.\n",
+    "planned_start": "2026-07-01",
+    "planned_end": "2026-08-31",
+    "actual_start": null,
+    "actual_end": null,
+    "percent_complete": 0,
+    "technical_progress": "",
+    "deliverables": [
+      {
+        "id": "D04a",
+        "title": "Registry index format + hosting",
+        "status": "planned"
+      },
+      {
+        "id": "D04b",
+        "title": "Install/update CLI (pack install <id>)",
+        "status": "planned"
+      },
+      {
+        "id": "D04c",
+        "title": "Version constraint resolver",
+        "status": "planned"
+      }
+    ],
+    "status": "planned",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  },
+  {
+    "id": "M05-compliance-packs-wave1",
+    "kind": "milestone",
+    "title": "Compliance Packs Wave 1 — Academic & Federal Research",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Build out the first wave of compliance packs for research funders:\nnserc-academic (Canadian Tri-Council), nih-rppr (US NIH), nsf-merit (US NSF).\nThese cover the most common academic/federal research reporting patterns.\n",
+    "planned_start": "2026-08-01",
+    "planned_end": "2026-10-31",
+    "actual_start": null,
+    "actual_end": null,
+    "percent_complete": 0,
+    "technical_progress": "",
+    "deliverables": [
+      {
+        "id": "D05a",
+        "title": "nserc-academic pack (Tri-Council reporting)",
+        "status": "planned"
+      },
+      {
+        "id": "D05b",
+        "title": "nih-rppr pack (NIH Research Performance Progress Report)",
+        "status": "planned"
+      },
+      {
+        "id": "D05c",
+        "title": "nsf-merit pack (NSF annual/final reports)",
+        "status": "planned"
+      }
+    ],
+    "status": "planned",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  },
+  {
+    "id": "M06-compliance-packs-wave2",
+    "kind": "milestone",
+    "title": "Compliance Packs Wave 2 — Industry & Regulatory",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Second wave of compliance packs for industry and regulatory frameworks:\nsoc2-evidence, iso-27001, eu-horizon. These serve different audiences\n(audit, compliance, EU research) and validate the pack system's generality.\n",
+    "planned_start": "2026-10-01",
+    "planned_end": "2026-12-31",
+    "actual_start": null,
+    "actual_end": null,
+    "percent_complete": 0,
+    "technical_progress": "",
+    "deliverables": [
+      {
+        "id": "D06a",
+        "title": "soc2-evidence pack (SOC2 audit evidence collection)",
+        "status": "planned"
+      },
+      {
+        "id": "D06b",
+        "title": "iso-27001 pack (ISO 27001 control attestation)",
+        "status": "planned"
+      },
+      {
+        "id": "D06c",
+        "title": "eu-horizon pack (EU Horizon periodic + final reports)",
+        "status": "planned"
+      }
+    ],
+    "status": "planned",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  },
+  {
+    "id": "M07-multi-project-dashboard",
+    "kind": "milestone",
+    "title": "Multi-Project Dashboard",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Portfolio-level view across multiple .project-state/ instances. An org running\n3-5 projects needs a single dashboard showing phase, health, upcoming deadlines,\nand cross-project resource conflicts. Reads multiple substrates, produces a\nunified view on the project website or as a standalone page.\n",
+    "planned_start": "2026-09-01",
+    "planned_end": "2026-11-30",
+    "actual_start": null,
+    "actual_end": null,
+    "percent_complete": 0,
+    "technical_progress": "",
+    "deliverables": [
+      {
+        "id": "D07a",
+        "title": "Multi-substrate reader (discover + scan N .project-state/ dirs)",
+        "status": "planned"
+      },
+      {
+        "id": "D07b",
+        "title": "Portfolio dashboard page (health, phase, deadlines)",
+        "status": "planned"
+      },
+      {
+        "id": "D07c",
+        "title": "Cross-project resource conflict detection",
+        "status": "planned"
+      }
+    ],
+    "status": "planned",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  },
+  {
+    "id": "M08-orchestrator-scheduling",
+    "kind": "milestone",
+    "title": "Orchestrator Scheduling + Cron Integration",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Make the orchestrator self-driving. Today it runs on-demand (\"what should I do this week?\").\nAdd cron-based scheduling so it fires on its own cadence, reads the matrix, and queues\ndraft generation without human initiation. Drafts still require human review before send.\n",
+    "planned_start": "2026-06-15",
+    "planned_end": "2026-08-15",
+    "actual_start": null,
+    "actual_end": null,
+    "percent_complete": 0,
+    "technical_progress": "",
+    "deliverables": [
+      {
+        "id": "D08a",
+        "title": "Cron integration (launchd/systemd/cloud scheduler)",
+        "status": "planned"
+      },
+      {
+        "id": "D08b",
+        "title": "Matrix tick engine (scan entries, compute due dates)",
+        "status": "planned"
+      },
+      {
+        "id": "D08c",
+        "title": "Draft queue with notification on completion",
+        "status": "planned"
+      }
+    ],
+    "status": "planned",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  },
+  {
+    "id": "M09-substrate-validation-suite",
+    "kind": "milestone",
+    "title": "Substrate Validation & Health Check Suite",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Comprehensive validation tooling for .project-state/. Today project-state validates\nindividual entities on write. This milestone adds whole-substrate health checks:\ncross-reference integrity, orphaned files, schema drift detection, stale lockfiles,\nand a project-health score.\n",
+    "planned_start": "2026-05-15",
+    "planned_end": "2026-06-30",
+    "actual_start": null,
+    "actual_end": null,
+    "percent_complete": 0,
+    "technical_progress": "",
+    "deliverables": [
+      {
+        "id": "D09a",
+        "title": "Cross-reference integrity checker (stakeholder refs, milestone refs, person refs)",
+        "status": "planned"
+      },
+      {
+        "id": "D09b",
+        "title": "Schema drift detector (flag entities missing required fields)",
+        "status": "planned"
+      },
+      {
+        "id": "D09c",
+        "title": "Health score computation + dashboard widget",
+        "status": "planned"
+      }
+    ],
+    "status": "planned",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  },
+  {
+    "id": "M10-v21-release",
+    "kind": "milestone",
+    "title": "v2.1 Release",
+    "owner_org": "Worksona",
+    "owner_person": "david-olsson-worksona",
+    "description": "Cut the v2.1 release incorporating: hardened starter packs, matrix editor,\npack registry, orchestrator scheduling, validation suite. This is the first\nrelease where the system is fully self-driving (orchestrator fires on cron)\nand non-technical PLs can use it (matrix editor).\n",
+    "planned_start": "2026-08-15",
+    "planned_end": "2026-09-15",
+    "actual_start": null,
+    "actual_end": null,
+    "percent_complete": 0,
+    "technical_progress": "",
+    "deliverables": [
+      {
+        "id": "D10a",
+        "title": "v2.1 release bundle (skills + packs + docs + migration)",
+        "status": "planned"
+      },
+      {
+        "id": "D10b",
+        "title": "Updated CHANGELOG, README, INSTALL",
+        "status": "planned"
+      },
+      {
+        "id": "D10c",
+        "title": "Blog post: v2.1 announcement",
+        "status": "planned"
+      }
+    ],
+    "status": "planned",
+    "created": "2026-04-27T00:00:00Z",
+    "created_by": "david@atomic47.co",
+    "last_modified": "2026-04-27T00:00:00Z",
+    "last_modified_by": "david@atomic47.co"
+  }
+]
