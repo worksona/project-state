@@ -1,0 +1,12 @@
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*.jsx"
+  [headers.values]
+    Content-Type = "text/babel"
+
+[[headers]]
+  for = "/uploads/*.pdf"
+  [headers.values]
+    Content-Disposition = "inline"

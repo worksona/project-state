@@ -1,0 +1,38 @@
+headersOrigin = "config"
+plugins = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/Users/davidolsson/WORKSONA/project-state/project-state-suite"
+publishOrigin = "config"
+base = "/Users/davidolsson/WORKSONA/project-state/project-state-suite"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[headers]]
+for = "/*.jsx"
+
+[headers.values]
+Content-Type = "text/babel"
+
+[[headers]]
+for = "/uploads/*.pdf"
+
+[headers.values]
+Content-Disposition = "inline"
