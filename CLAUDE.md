@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-**project-state** (v2.0) is a generic operational substrate for multi-stakeholder projects. It provides 19 `project-*` skills and 5 compliance packs that turn any project into a system where routine reporting is a byproduct of normal work. The substrate is a typed filesystem (`.project-state/`) — plain YAML, JSON, NDJSON, and markdown files on a shared drive, no database or API.
+**project-state** (v3.0 in development, v2.0 released) is a generic operational substrate for multi-stakeholder projects. It provides 23 `project-*` skills and 6 compliance packs that turn any project into a system where routine reporting is a byproduct of normal work. The substrate is a typed filesystem (`.project-state/`) — plain YAML, JSON, NDJSON, and markdown files on a shared drive, no database or API.
 
 ## Architecture (three layers)
 
 1. **Substrate** (`.project-state/`) — file-per-entity storage with append-only activity logs, advisory lockfiles, and frontmatter timestamps for concurrency. See `docs/CONCURRENCY.md`.
-2. **Skills** (`skills/project-*/SKILL.md`) — 19 markdown-defined skills grouped into P0 (foundations), P1 (core ops), P2 (surfaces/automation), P3 (polish). Skills are stateless verbs that read/write the substrate via `project-state` (the memory layer). Every skill routes through `project-state`.
+2. **Skills** (`skills/project-*/SKILL.md`) — 23 markdown-defined skills grouped into P0 (foundations), P1 (core ops), P2 (surfaces/automation), P3 (polish). Skills are stateless verbs that read/write the substrate via `project-state` (the memory layer). Every skill routes through `project-state`.
 3. **Surfaces** — Slack (auto-post), Gmail (always draft, never auto-send), Google Calendar, scsiwyg blog, project website. All external artifacts require human review before sending.
 
 ## Key design principles
@@ -29,8 +29,8 @@ The central v2.0 concept: `.project-state/reporting-matrix.yaml` encodes "for ea
 |------|--------|
 | P0 Foundation | `project-state` (memory layer), `project-scaffolder` (init + seed matrix) |
 | P1 Core | `project-phase-gate`, `project-document-curator`, `project-milestone-manager`, `project-status-reporter` |
-| P2 Surfaces | `project-orchestrator`, `project-notifier`, `project-review-meeting`, `project-funder-reporting`, `project-change-register`, `project-blog-publisher`, `project-website-publisher`, `project-doc-suite-generator` |
-| P3 Polish | `project-onboarder`, `project-ip-tracker`, `project-external-comms`, `project-lessons`, `project-archive` |
+| P2 Surfaces | `project-orchestrator`, `project-notifier`, `project-review-meeting`, `project-funder-reporting`, `project-change-register`, `project-blog-publisher`, `project-website-publisher`, `project-doc-suite-generator` _(deprecated v3.0)_, `project-doc-suite` _(v3.0 unified suite)_, `project-sred-tracker` _(v3.0, sred-canada pack)_, `project-sred-reviewer` _(v3.0, sred-canada pack)_ |
+| P3 Polish | `project-onboarder`, `project-ip-tracker`, `project-external-comms`, `project-lessons`, `project-archive`, `project-onboarding` _(v3.0 guided init)_ |
 
 Six skills are pack-profile-driven (renamed from v1.x): `project-review-meeting` (was `project-sc-meeting`), `project-funder-reporting` (was `project-claim-prep`), `project-external-comms` (was `project-publications`), `project-ip-tracker`, `project-phase-gate`, `project-archive`.
 
@@ -41,7 +41,7 @@ Packs live in `packs/`. Each contains a `manifest.yaml`, profile YAMLs under `pr
 | Pack | Maturity |
 |------|----------|
 | `pic-pcais` | production |
-| `client-services`, `board-investor`, `agile-default`, `open-source-community` | starter |
+| `client-services`, `board-investor`, `agile-default`, `open-source-community`, `sred-canada` | starter |
 
 ## File naming conventions (entities in `.project-state/`)
 

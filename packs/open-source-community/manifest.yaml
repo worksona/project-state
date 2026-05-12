@@ -13,7 +13,5 @@ pack:
   maturity: "starter — minimal scaffold"
 
 provides:
-  profiles:
-    - external-comms     # everything is public; community review only
-    - phase-gate         # incubation → active → maintained → archived
+  profiles: []           # planned for v0.2: external-comms (public-by-default community review), phase-gate (incubation→active→maintained→archived)
   reporting_matrix_defaults: true
