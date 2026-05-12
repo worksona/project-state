@@ -34,7 +34,7 @@ If the `people/` entry doesn't exist, offer to create it first via `project-stat
 ## Brief structure
 
 ```markdown
-# Welcome to Project <Ai26.10 / CDI-A47 AI Program>
+# Welcome to Project <[Short Name] / [Long Name]>
 
 Hi <name>,
 
@@ -50,8 +50,8 @@ You are joining as the <role> representing <organization>.
 
 ## What you own
 <if milestone owner>  The following milestones are assigned to your organization:
-  - M02 A47 Data Infrastructure (…)
-  - M05 A47 AI Model & Digital Twin (…)
+  - M02 [Org] Data Infrastructure (…)
+  - M05 [Org] AI Model (…)
 <if SC designate>   You will vote at Steering Committee meetings on behalf of <org>.
 <if Finance Rep>    You own quarterly claim submissions from <org> by the 20th of Apr/Jul/Oct/Jan.
 <if Comms Rep>      You coordinate announcements + publications for <org>, in partnership with PIC.
@@ -128,4 +128,4 @@ Refresh the brief for someone who's been around but wants an updated snapshot.
 - **project-state** — reads people, manifest, milestones, phase.
 - **project-notifier** — Gmail draft to the new teammate.
 - **project-milestone-manager** — pulls the milestones owned by the person's org.
-- **project-sc-meeting** — brief references the next SC meeting date/time.
+- **project-review-meeting** — brief references the next SC meeting date/time.

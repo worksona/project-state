@@ -124,15 +124,15 @@ Return a short table: total docs, by kind, by phase, SoT count, warnings.
 - **project-phase-gate** — when a doc is registered that matches a gate's `required_artifacts_paths`, populate that path. If all gate artifacts are present, `project-phase-gate` can offer to transition.
 - **project-status-reporter** — status reports link to SoT docs by id (never by raw filename). Renames are invisible to reports.
 
-## Reference: current inventory snapshot
+## Reference: example inventory snapshot
 
-At scaffold time the index was seeded with the following source-of-truth docs:
-- `doc-proposal-full` — AI Program Full Proposal (2026-03-27)
-- `doc-workbook-pcais` — PCAIS Program Workbook (to be superseded by signed Schedule A)
+At scaffold time the index is typically seeded with source-of-truth docs such as:
+- `doc-proposal-full` — Full Proposal or application document
+- `doc-program-workbook` — Program Workbook (to be superseded by signed governing agreement)
 - `doc-financial-step1` — Financial Assessment Step 1 workbook
-- `doc-pic-pm-guide` — PIC Project Management Guide (May 2025)
+- `doc-funder-pm-guide` — Funder Project Management Guide
 
-And the following non-SoT templates:
-- `doc-mpa-template`, `doc-financial-step2-template`, `doc-fca-template`, `doc-capital-cost-approval`, `doc-dcc-members`, `doc-related-party-members`
+And non-SoT templates such as:
+- `doc-agreement-template`, `doc-financial-step2-template`, `doc-fca-template`
 
-When the signed MPA arrives in `inbox/`, it will supersede nothing (there's no prior MPA), but the signed Schedule A inside it will supersede `doc-workbook-pcais` as the authoritative milestone list.
+When the signed governing agreement arrives in `inbox/`, it supersedes the program workbook as the authoritative milestone list.

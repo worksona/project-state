@@ -73,7 +73,7 @@ For consortium or public tier:
 3. Via `project-notifier`:
    - Gmail draft to SC designates + PIC PM (for public) with the draft attached
    - Slack post to `alerts` channel
-4. Call `project-publications` to register as a formal publication proposal (it tracks the clock and the SC review record).
+4. Call `project-external-comms` to register as a formal publication proposal (it tracks the clock and the SC review record).
 
 ### `publish(draft_id, url_slug?)`
 
@@ -91,7 +91,7 @@ If SC review returns revisions, increment version and re-start the review clock 
 
 - **30 days for full publications; 14 days for abstracts.** These are from PIC PM Guide / MPA.
 - **SC must review before public posts.** No exceptions — this is an MPA obligation.
-- **If IP or trade secrets are at stake**, the Publishing Party must delay to allow patent filing or remove the sensitive content. `project-publications` enforces this; this skill defers to it.
+- **If IP or trade secrets are at stake**, the Publishing Party must delay to allow patent filing or remove the sensitive content. `project-external-comms` enforces this; this skill defers to it.
 - **Public posts need PIC + ISED funding acknowledgement.** Add a standard footer block to every public draft.
 - **No party may publish another party's data/info without consent.**
 
@@ -105,7 +105,7 @@ If SC review returns revisions, increment version and re-start the review clock 
 ## Integration
 
 - **project-state** — reads milestones, decisions, publications; writes drafts.
-- **project-publications** — formal publication tracker (SC review clock, patent delay rules).
+- **project-external-comms** — formal publication tracker (SC review clock, patent delay rules).
 - **project-status-reporter** — source of narrative material (weekly/monthly/quarterly summaries).
 - **project-notifier** — Slack / Gmail distribution of drafts and published posts.
 - **project-milestone-manager** — milestone-completion is a common blog trigger.

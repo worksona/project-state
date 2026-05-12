@@ -1,6 +1,6 @@
 ---
 name: project-scaffolder
-description: "One-shot initializer for a new .project-state/ facility. Use this skill when starting a brand-new grant-funded project — scaffolds the directory tree, manifest, phase manifests, logs, README/SCHEMA/CONCURRENCY/SKILLS docs — and when asked to 'set up a new project', 'create a new project-state', 'scaffold a project', 'initialize project-state', 'start a new PIC grant', 'bootstrap a grant project', 'new PCAIS project', 'create the state folder for [project]', 'init project-state in this folder'. Do not use for the existing CDI/A47 project — that is already scaffolded. Asks clarifying questions about the project, its funder, its consortium, and seeds a manifest that the team fills in. Follow-up work (milestone seeding from proposal, people seeding from MPA) is handed off to the other project-* skills."
+description: "One-shot initializer for a new .project-state/ facility. Use this skill when starting a brand-new funded project — scaffolds the directory tree, manifest, phase manifests, logs, README/SCHEMA/CONCURRENCY/SKILLS docs — and when asked to 'set up a new project', 'create a new project-state', 'scaffold a project', 'initialize project-state', 'start a new funded project', 'bootstrap a grant project', 'new consortium project', 'create the state folder for [project]', 'init project-state in this folder'. Asks clarifying questions about the project, its funder, its consortium, and seeds a manifest that the team fills in. Follow-up work (milestone seeding from proposal, people seeding from MPA) is handed off to the other project-* skills."
 ---
 
 # Project Scaffolder
@@ -9,7 +9,7 @@ description: "One-shot initializer for a new .project-state/ facility. Use this 
 
 Stand up a fresh `.project-state/` in a new working directory. Ensures the facility starts correctly-shaped so the other `project-*` skills can operate.
 
-Used once per project at kickoff. Not needed for the CDI/A47 project (already scaffolded April 2026).
+Used once per project at kickoff.
 
 ## Trigger phrases
 
@@ -17,15 +17,15 @@ Used once per project at kickoff. Not needed for the CDI/A47 project (already sc
 - "scaffold a project"
 - "initialize project-state" / "init project-state"
 - "create a new .project-state"
-- "start a new grant project" / "bootstrap a grant project"
-- "new PCAIS project"
+- "start a new funded project" / "bootstrap a grant project"
+- "new consortium project"
 
 ## Inputs (ask the user if not provided)
 
-1. **Project short name** (e.g., `Ai27.XX`) — used as the directory handle in reports.
-2. **Project long name** (e.g., "Fermentation Monitoring AI Program").
-3. **Funder** (default: "Protein Industries Canada (PIC)").
-4. **Program** (default: "PCAIS").
+1. **Project short name** (e.g., `Proj-001`) — used as the directory handle in reports.
+2. **Project long name** (e.g., "Renewable Energy Consortium Project").
+3. **Funder** — which organization or program is funding this work?
+4. **Program** — what program or contract is this under?
 5. **Consortium Project Lead organization.**
 6. **Other Consortium Members.**
 7. **Project start/end dates** (if known).
@@ -40,7 +40,7 @@ Run in the user's current working directory (the project root):
 ```
 .project-state/
 ├── README.md             (from template)
-├── SCHEMA.md             (from template; universal PIC-aligned schema)
+├── SCHEMA.md             (from template; universal project-state schema)
 ├── CONCURRENCY.md        (from template)
 ├── SKILLS.md             (from template; lists the suite)
 ├── manifest.yaml         (seeded with inputs; TODO for MPA-dependent items)
@@ -52,7 +52,7 @@ Run in the user's current working directory (the project root):
 │   ├── 04-execution/manifest.yaml
 │   ├── 05-closeout/manifest.yaml
 │   └── 06-archive/manifest.yaml
-├── documents/            (with inbox/, source-of-truth/, working/, published/, pic-templates/ subdirs)
+├── documents/            (with inbox/, source-of-truth/, working/, published/, templates/ subdirs)
 ├── milestones/           (empty; seed via proposal_docx → project-document-curator + project-milestone-manager)
 ├── people/               (empty; add via project-state)
 ├── decisions/            (empty)
@@ -62,8 +62,8 @@ Run in the user's current working directory (the project root):
 ├── publications/         (empty)
 ├── lessons-learned/      (empty)
 ├── tracking/             (empty)
-├── reports/{weekly,sc-meetings,claims,adhoc,pic-submissions}/  (empty)
-├── communications/{pic-updates,consortium-updates,blog-drafts,meeting-minutes}/  (empty)
+├── reports/{weekly,review-meetings,claims,adhoc}/  (empty)
+├── communications/{funder-updates,consortium-updates,blog-drafts,meeting-minutes}/  (empty)
 └── logs/
     ├── activity.ndjson   (with a project.scaffolded event)
     └── decisions.ndjson
@@ -95,7 +95,7 @@ After scaffolding:
 3. Write one decision to `decisions.ndjson`: "Adopted .project-state/ facility for <project>. Rationale: …"
 4. Write one activity event: `project.scaffolded`.
 5. Print the follow-up checklist:
-   - Populate manifest TODOs (MPA dates, SC designates, PIC contacts)
+   - Populate manifest TODOs (agreement dates, review designates, funder contacts)
    - Seed milestones from proposal (if applicable)
    - Install the `project-*` skills (see `.project-state/skills/INSTALL.md`)
 

@@ -1,235 +1,321 @@
-# Project Website Integration
+# Project Website
 
-**Version:** 1.0
-**Owns:** the `website/` source tree + the deployed project URL (Vercel/Netlify/Cloudflare Pages)
-**Owned by skill:** `project-website-publisher`
+**Version:** 2.0 (App Router template)
+**Template location:** `templates/website/`
+**Owns:** the `templates/website/` source tree + the deployed project URL (Vercel/Netlify/Cloudflare Pages)
+**Skill:** `project-website-publisher`
 
-This document covers the project-website pattern added in v1.1 of the suite — what it is, why it exists, how it's wired to `.project-state/`, how to scaffold one for a new project, how it interacts with publication review and visibility tiers, and how to extend it.
+This document covers the v2.0 Next.js App Router website template — what it is, how it reads `.project-state/` at runtime, how to deploy it for a new project, and how to configure it.
 
-## Why a website at all
+---
 
-Before the website existed, every consortium-facing artifact (tracker, cadence playbook, baseline reports, milestone specs) lived in two places: the canonical markdown/docx in `documents/published/`, and an emailed-or-Drive-shared copy that quickly drifted out of date. Stakeholders asked "what's the latest version of X" and the answer required someone to look it up.
+## What it is
 
-The website fixes this by exposing one stable URL per document — a URL that always serves the latest published version, with no per-recipient distribution mechanic. Email someone a link instead of an attachment; the link is current.
+`templates/website/` is a full-featured Next.js 16 project that renders `.project-state/` as a live team website. It uses the App Router with ISR (revalidate every 5 minutes) so pages are always current without a rebuild. All pages are password-protected via a cookie-based auth middleware.
 
-The site is intentionally read-only and intentionally minimal: it mirrors `documents/published/` with light navigation and visibility-aware rendering. Authoring still happens in markdown in the substrate. The site exists to *surface* the substrate, not to *replace* it.
+The site provides:
 
-## The pattern at a glance
+| Route | Content source |
+|---|---|
+| `/` | Dashboard: milestones, Gantt, budget, quick stats |
+| `/milestones` | All milestones with progress bars and owner badges |
+| `/people` | Team roster grouped by organisation |
+| `/blog` | Blog posts from scsiwyg (if configured) |
+| `/blog/[slug]` | Full post rendered as Markdown |
+| `/wiki/[...slug]` | Wiki pages from scsiwyg wiki |
+| `/calendar` | Upcoming events from cadence.yaml + events/*.yaml |
+| `/context` | Free-form context page from `.project-state/references/context.md` |
+| `/decisions` | Decision log from `decisions/*.yaml` |
+| `/risks` | Risk register from `risks/*.yaml` |
+| `/reporting` | Baseline / report documents from `reports/` or `Baseline-Reports-*/` |
+| `/reporting/[slug]` | Single report with doc preview |
+| `/documents` | Document chain-of-custody index |
+| `/about/the-project` | Funding, consortium, timeline from manifest |
+| `/about/this-site` | What this site is |
+| `/about/how-it-updates` | How content flows in |
+| `/about/agentic-state-system` | The project-state skill system |
 
-```
-.project-state/                                       (Google Drive / OneDrive / shared FS)
-├── documents/
-│   ├── working/                  ← author here
-│   ├── published/                ← curator promotes here
-│   └── index.yaml                ← slug → published path + visibility
-├── tracking/
-│   └── 03-Project-Tracker-v1.0.xlsx
-└── website/                      ← project-website-publisher owns this
-    ├── package.json
-    ├── next.config.js / vercel.json
-    ├── content/docs/             ← regenerated MDX from documents/published/
-    ├── pages/                    ← landing, downloads, [slug] route
-    ├── components/               ← visibility-banner, tracker-link, etc.
-    └── public/
-        ├── downloads/            ← copied xlsx, pdf, zip
-        └── images/               ← copied from doc image refs
+---
 
-         ↓ deploy
+## Architecture
 
-https://<project>.vercel.app/
-├── /                             ← homepage with navigation built from index.yaml
-├── /docs/cadence-at-a-glance     ← visibility: consortium
-├── /docs/team-summary            ← visibility: team (noindex banner)
-├── /docs/tracker                 ← description page + download link
-├── /docs/baseline-reports-index  ← table of contents
-└── /downloads/<filename>         ← live tracker xlsx, etc.
-```
+### Runtime reads, not build-time generation
 
-## Doc lifecycle on the website
+Every page is a Next.js server component that reads `.project-state/` directly at request time. There is no static MDX compilation step and no content build pipeline. The layout is `force-dynamic` so no page is pre-rendered at build time.
 
 ```
-[author writes markdown in documents/working/foo.md]
-                ↓
-[project-document-curator promotes to documents/published/foo.md
- and updates documents/index.yaml: surfaces: [website]]
-                ↓
-[activity log emits document.published event]
-                ↓
-[project-website-publisher.regenerate]
-   - reads documents/published/foo.md
-   - emits website/content/docs/foo.mdx
-   - rewrites internal links to /docs/<other-slug>
-   - copies referenced images to website/public/images/
-                ↓
-[project-website-publisher.build]
-   - next build inside website/
-   - validates internal links, download paths, public-doc clearance
-                ↓
-[project-website-publisher.deploy]
-   - vercel --prod (or push to main if GH auto-deploy)
-   - logs deploy URL into state.json under surfaces.website.last_deploy
-   - posts Slack notification via project-notifier
+Request → Next.js server component → reads .project-state/*.yaml → renders HTML → browser
 ```
 
-A doc rename triggers a Next.js redirect: the curator stamps the old slug into `redirect_from` on the new entry, and the build emits the redirect rule. External links to the old URL keep working.
+ISR (`revalidate = 300`) keeps responses fast by caching the rendered output for 5 minutes, then revalidating in the background on the next request.
 
-## Visibility tiers
+### File resolution
 
-Each entry in `documents/index.yaml` carries a `visibility` field:
+`lib/paths.ts` resolves the three key directories at startup:
 
-| Visibility | Audience | URL behavior | Publication review |
-|---|---|---|---|
-| `team` | A47 + CDI internal | Served at `/docs/<slug>`. `noindex` meta tag. "Internal — do not redistribute" banner. | None |
-| `consortium` | A47 + CDI + immediate stakeholders | Served at `/docs/<slug>`. `noindex`. "Consortium-confidential" banner. | SC informational notice when promoted |
-| `public` | World-readable; indexed by search | Served at `/docs/<slug>`. No banner. Indexed. | **Full 30-day review per MPA (14-day for abstracts)** |
+```typescript
+STATE_DIR  = .project-state/          // project root or parent
+REPORTS_DIR = reports/ or Baseline-Reports-*/  // auto-discovered
+SCSIWYG_USER = process.env.NEXT_PUBLIC_SCSIWYG_SITE ?? ""
+```
 
-Visibility is enforced at three points:
-1. **Build time** — `public` docs whose `publication_review.status != approved` cause `project-website-publisher.build` to fail with a clear error pointing at `project-publications`.
-2. **Render time** — the MDX layout component reads visibility frontmatter and emits the appropriate banner + meta tags.
-3. **robots.txt** — `team` and `consortium` slugs are always disallowed; `public` slugs are allowed only after their review clears.
+When the website is deployed as a subdirectory of the project repo (`website/` inside the same repo as `.project-state/`), `lib/paths.ts` resolves paths upward automatically. When deployed standalone (Vercel with rootDirectory pointing at `website/`), run `npm run sync-state` (or `npm run vercel-build`) to copy `.project-state/` and `reports/` into the website directory before building.
 
-The robots.txt is regenerated on every build from the current `documents/index.yaml`.
+### Stakeholder colours
 
-## Configuration
-
-Add a `website` block under `surfaces:` in your project's `manifest.yaml`:
+`lib/colors.ts` provides a 5-slot palette assigned by stakeholder index. When the manifest lists:
 
 ```yaml
+stakeholders:
+  organizations:
+    - short_code: ABC
+    - short_code: XYZ
+```
+
+`buildStakeholderMap(orgs)` returns `Map { "ABC" → orange, "XYZ" → indigo, ... }`. All components (Gantt chart, milestones, people, dashboard) accept and use this map via `stakeholderStyle(shortCode, map)`. No project-specific colour hardcoding anywhere.
+
+### Authentication
+
+`middleware.ts` intercepts all routes except `/login` and `/api/auth/*`. A signed JWT in the `auth_token` cookie grants access. Set `AUTH_SECRET` (any random string, ≥32 chars) and `AUTH_PASSWORD` in your environment. The login page at `/login` issues the cookie.
+
+---
+
+## Directory layout
+
+```
+templates/website/
+├── app/
+│   ├── layout.tsx              force-dynamic, reads manifest for header/footer
+│   ├── page.tsx                Dashboard
+│   ├── login/page.tsx
+│   ├── milestones/page.tsx
+│   ├── people/page.tsx
+│   ├── blog/page.tsx + [slug]/page.tsx
+│   ├── wiki/[...slug]/page.tsx
+│   ├── calendar/page.tsx
+│   ├── context/page.tsx
+│   ├── decisions/page.tsx
+│   ├── risks/page.tsx
+│   ├── reporting/page.tsx + [slug]/page.tsx
+│   ├── documents/page.tsx
+│   ├── about/{the-project,this-site,how-it-updates,agentic-state-system}/page.tsx
+│   ├── globals.css             Tailwind v4, CSS variables for --accent/--muted/etc.
+│   └── api/
+│       ├── auth/{login,logout}/route.ts
+│       └── reporting/[slug]/download/route.ts
+├── components/
+│   ├── timeline-bar.tsx        Progress bar across the project window in the header
+│   ├── page-header.tsx         Kicker + title + description
+│   ├── nav-dropdown.tsx        Desktop dropdown nav item
+│   ├── mobile-nav.tsx          Hamburger nav for mobile
+│   ├── markdown.tsx            react-markdown with GFM + syntax highlight
+│   ├── mermaid.tsx             Client component for Mermaid diagrams
+│   └── gantt-chart.tsx         SVG Gantt with dynamic owner colours
+├── lib/
+│   ├── paths.ts                STATE_DIR, REPORTS_DIR, SCSIWYG_USER
+│   ├── state.ts                getManifest, getMilestones, getRisks, getDecisions, getPeople, fmtCAD
+│   ├── timeline.ts             buildRange, progressFor, monthTicks, pctOfRange, dayDiff
+│   ├── calendar.ts             getEvents, CATEGORY_STYLE
+│   ├── scsiwyg.ts              listPosts, getPost, getWikiTree, getWikiPage, flattenTree
+│   ├── documents.ts            listReportDocs, getReportDocBySlug, renderDocxToHtml, renderXlsxToSheets
+│   ├── colors.ts               PALETTE, FALLBACK, buildStakeholderMap, stakeholderStyle
+│   └── auth.ts                 signToken, verifyToken, AUTH_COOKIE
+├── scripts/
+│   └── sync-state.mjs          Copies .project-state/ + reports/ into website dir for standalone deploys
+├── middleware.ts                JWT auth gate
+├── next.config.ts
+├── package.json
+├── postcss.config.mjs
+└── tsconfig.json
+```
+
+---
+
+## Setting up for a new project
+
+### 1. Copy the template
+
+```bash
+# From inside the project repo (sibling to .project-state/)
+cp -r /path/to/project-state/templates/website ./website
+cd website
+npm install
+```
+
+### 2. Set environment variables
+
+Create `website/.env.local`:
+
+```bash
+# Required
+AUTH_SECRET=<random-string-at-least-32-chars>   # e.g. openssl rand -hex 32
+AUTH_PASSWORD=<your-team-password>
+
+# Optional — connect the scsiwyg blog/wiki
+NEXT_PUBLIC_SCSIWYG_SITE=<your-scsiwyg-username>
+```
+
+For Vercel/Netlify, set these as environment variables in the hosting dashboard instead of `.env.local`.
+
+### 3. Run locally
+
+```bash
+# From the project repo root (where .project-state/ lives):
+cd website
+npm run dev        # dev server on http://localhost:3000
+```
+
+`lib/paths.ts` resolves `../. project-state` automatically when run from inside `website/`.
+
+### 4. Deploy to Vercel
+
+**Option A — whole repo (recommended)**
+
+1. Push the repo to GitHub.
+2. Create a new Vercel project, set **Root Directory** to `website`.
+3. Set `AUTH_SECRET`, `AUTH_PASSWORD`, and optionally `NEXT_PUBLIC_SCSIWYG_SITE` in Vercel's Environment Variables.
+4. Deploy. The `vercel-build` script (`node scripts/sync-state.mjs && next build`) copies `.project-state/` and `reports/` before building.
+
+**Option B — website directory only**
+
+If you're deploying only the `website/` folder (no parent repo on the host):
+
+```bash
+cd website
+npm run sync-state   # copies ../. project-state → .project-state/ and finds reports dir
+```
+
+Then deploy. The sync script auto-discovers `reports/` or `Baseline-Reports-*/` in the parent directory and copies it as `reports/` in the website root.
+
+---
+
+## Configuration reference
+
+### manifest.yaml fields used by the website
+
+```yaml
+project:
+  short_name: "ABC-XYZ"          # header brand name
+  long_name: "Full Project Name" # about/the-project title
+  one_liner: "..."               # meta description, dashboard subtitle
+  funder: "Funder Name"          # footer + about/the-project
+  program: "Program Name"        # footer + about/the-project
+  pic_project_number: "..."      # about/the-project
+  governing_document: "..."      # about/the-project
+  governing_document_status: "..." # about/the-project
+
+dates:
+  project_start: "2024-01-01"    # timeline bar, Gantt, about/the-project
+  project_end:   "2026-12-31"
+
+budget:
+  total_project_cad: 1234567
+  pic_co_investment_cad: 800000
+  consortium_co_investment_cad: 434567
+
+stakeholders:
+  organizations:
+    - id: abc
+      short_code: ABC
+      name: "Organisation ABC"
+      role: "Lead Partner"
+    - id: xyz
+      short_code: XYZ
+      name: "Organisation XYZ"
+      role: "Research Partner"
+
 surfaces:
   website:
     enabled: true
-    framework: "nextjs"           # nextjs | astro | eleventy
-    hosting: "vercel"             # vercel | netlify | cloudflare-pages | github-pages
-    production_url: "https://<project>.vercel.app/"
-    preview_urls_enabled: true
-    auto_deploy_on_publish: true  # rebuild + deploy when documents/published/ changes
-    require_review_for_public: true   # enforce 30-day MPA review on public pages
-    default_visibility: "consortium"  # what new docs default to until explicitly set
-    download_dir_max_size_mb: 100
-    notification_channel_after_deploy: "#proj-deploys"
+    production_url: "https://your-project.vercel.app/"
 ```
 
-Per-doc, in `documents/index.yaml`:
+### Context page
 
-```yaml
-- slug: cadence-at-a-glance
-  doc_id: doc-cadence-at-a-glance-v0.2-summary
-  source_path: documents/published/cadence-at-a-glance.md
-  surfaces: [website, drive]      # which surfaces this doc lands on
-  visibility: consortium
-  publication_review:
-    required: false
-    status: not_required
-  generated_artifacts:
-    docx: outputs/18a-Cadence-At-a-Glance.docx   # for download
-  redirect_from:                  # if you renamed the slug
-    - cadence-summary
-```
+Create `.project-state/references/context.md` (or `.project-state/context.md`) to populate the `/context` route. This page is for collaboration agreements, working norms, links, and any project-specific context that the team needs easy access to. If the file doesn't exist, the page shows a helpful empty state with instructions.
 
-## Scaffolding a website for a new project
+### Blog and wiki (scsiwyg)
 
-`project-website-publisher init-website` does this in one step. Manually it's:
+Set `NEXT_PUBLIC_SCSIWYG_SITE` to your scsiwyg username. The blog page lists all posts from that account; the wiki route renders the scsiwyg wiki tree. If the env var is unset, both pages show empty states explaining how to connect.
+
+### Calendar
+
+Create `.project-state/cadence.yaml` for recurring events and `.project-state/events/*.yaml` for one-off events. The calendar page renders upcoming events from both sources.
+
+---
+
+## Stakeholder colour system
+
+`lib/colors.ts` provides a 5-slot palette (orange, indigo, emerald, sky, violet) assigned round-robin by the order of `manifest.stakeholders.organizations`. Each `PaletteEntry` has four Tailwind class strings:
+
+| Key | Used in |
+|---|---|
+| `bar` | Gantt chart milestone bars (gradient) |
+| `dot` | Gantt chart owner dots |
+| `pill` | Owner badges on milestone and people pages |
+| `tag` | Tag pills elsewhere |
+
+When adding a new project, no colour configuration is needed — just list the organisations in `manifest.yaml` in your preferred order and the palette assigns automatically.
+
+---
+
+## Reports directory
+
+The `/reporting` route reads documents from a `reports/` directory (or any directory named `Baseline-Reports-*`). `lib/paths.ts` discovers the reports directory by scanning both `cwd` and its parent. Supported formats:
+
+- `.docx` — rendered to HTML via mammoth
+- `.xlsx` — rendered to a sheet table via xlsx
+- `.pdf`, `.txt`, `.md` — served for download or rendered inline
+
+`scripts/sync-state.mjs` handles copying the reports directory (regardless of its original name) as `reports/` when deploying standalone.
+
+---
+
+## Build and type checking
 
 ```bash
-# 1. Inside .project-state/, create the website directory
-cd .project-state
-mkdir -p website
 cd website
-
-# 2. Initialize Next.js with MDX support
-npx create-next-app@latest . --typescript --no-tailwind --app=false --no-eslint
-npm install @next/mdx @mdx-js/loader @mdx-js/react gray-matter
-
-# 3. Drop in the suite's website-template/ files
-#    (provided in the skills package under templates/website/)
-cp -r ../../templates/website/* .
-
-# 4. Wire production_url
-#    Vercel: vercel link, then vercel --prod for first deploy
-#    Netlify: netlify init
-#    Cloudflare Pages: wrangler pages project create
-
-# 5. Update manifest.yaml surfaces.website.production_url with the deploy URL
+npm run build      # next build — must pass with zero TypeScript errors
 ```
 
-The `templates/website/` directory in this package contains a starter Next.js project with the visibility-aware MDX layout, the `[slug].tsx` route, the homepage navigation generator, the downloads route, and a sample `vercel.json`.
+The build succeeds without a `.project-state/` directory present because `app/layout.tsx` has both `export const dynamic = "force-dynamic"` (preventing build-time prerender) and an `EMPTY_MANIFEST` fallback with a try/catch around `getManifest()`.
 
-## Hosting choices
-
-| Hosting | Strengths | Trade-offs |
-|---|---|---|
-| **Vercel** (default) | Zero-config Next.js. Preview URLs per branch. Generous free tier. | Vendor lock-in for some Next.js features. |
-| **Netlify** | Similar to Vercel. Strong forms / functions story. | Slightly slower builds for large MDX sets. |
-| **Cloudflare Pages** | Fastest CDN. No bandwidth caps. | More setup for SSR-heavy sites; Next.js partial support. |
-| **GitHub Pages** | Free. No platform lock-in. | Static-only. No preview URLs. Manual workflow setup. |
-
-The skill is hosting-agnostic — `manifest.yaml.surfaces.website.hosting` controls which deploy command it runs. The starter template includes configs for all four.
-
-## CI / deployment automation
-
-Two integration patterns:
-
-**Push-to-deploy (recommended for active projects).** Connect the `website/` subdirectory to a GitHub repo and enable Vercel's GitHub integration. Every push to the production branch triggers a deploy; preview deploys run on every PR. The `regenerate` step still runs locally inside `.project-state/` and commits the changes to the repo.
-
-**CLI-deploy (recommended for shared-drive-only teams without git).** The skill runs `vercel --prod` or `netlify deploy --prod` directly from the project facility. No git required. State.json tracks deploy history.
-
-## Integration with other surfaces
-
-- **`project-notifier`** asks `project-website-publisher.what-url(slug)` when composing email drafts so emails contain stable links instead of attachments. The Monday tracker email, the bi-weekly stakeholder update, and the SC pack distribution all use this.
-- **`project-blog-publisher`** routes long-form *narrative* updates (milestone completions, retrospectives, monthly briefs) to scsiwyg as blog posts; the website hosts the *reference* (cadence, specs, tracker, milestone definitions). Blog posts can link into the website via `https://<project>.vercel.app/docs/<slug>`.
-- **`project-document-curator`** triggers website regeneration when a doc lands in `documents/published/`. The curator owns visibility classification at promotion time.
-- **`project-publications`** holds the 30/14-day review clock. The website skill defers to it for public-doc clearance — never short-circuits the review.
-
-## Operational rhythms
-
-- **Auto-deploy on doc publish** (default) — `documents/published/` changes trigger rebuild + deploy. Slack notification posts to the configured channel with deploy URL and a one-line changelog.
-- **Manual rebuild** — user runs `regenerate the website`. Skill rebuilds even if nothing has changed (useful after dependency updates or template tweaks).
-- **Visibility flip** — doc moves from `team` → `consortium` or `consortium` → `public`. After review clears (for public), the next build picks up the new tier and adjusts banner / robots.txt.
-- **Tracker refresh** — the live tracker xlsx is copied to `website/public/downloads/` on every build, so the download link always serves the current version.
-
-## Audit trail
-
-Every deploy writes an event to `logs/activity.ndjson`:
-
-```json
-{"ts":"2026-04-27T15:23:08Z","actor":"project-website-publisher","event":"website.deployed","url":"https://ai26-10.vercel.app/","commit_sha":"abc1234","docs_changed":["cadence-at-a-glance","tracker"],"deploy_log":"reports/deploys/2026-04-27-15-23-08.txt"}
+Expected build output:
+```
+✓ Compiled successfully
+ƒ (Dynamic)  server-rendered on demand   [all pages with force-dynamic layout]
+● (SSG)      prerendered as static HTML  [blog/[slug], reporting/[slug], wiki/[...slug]]
 ```
 
-Every visibility flip writes a `document.visibility_changed` event. Every refused-deploy (e.g. failing public-doc review) writes a `website.deploy_blocked` event with the reason. The deploy history is queryable from `state.json.surfaces.website.deploy_history` (last 10 deploys retained).
+The Turbopack NFT warning about `process.cwd()` in `lib/paths.ts` is expected and non-blocking.
 
-## Failure modes and recovery
+---
 
-| Failure | Cause | Recovery |
-|---|---|---|
-| Build fails on broken internal link | Source markdown references a slug that no longer exists | Build log names the source file + missing slug. Fix the source. |
-| Build fails on missing image | Image referenced by markdown isn't in `documents/published/`'s image dir | Add image or remove reference. |
-| Deploy fails on quota | Vercel/Netlify free-tier bandwidth or build-minutes exhausted | Hosting platform's UI shows the cap. Upgrade or wait for reset. |
-| Public doc held back | `publication_review.status != approved` for a `public`-marked doc | `project-publications` tracks where in the 30-day clock the doc is. Either wait, mark non-public, or fast-track via SC. |
-| Image > 5MB | Large image committed to repo | Build flags it. Compress or move to CDN reference. |
-| Stale download | Tracker xlsx updated but website not rebuilt | Manual `regenerate the website` or wait for next auto-deploy trigger. |
+## Operational notes
 
-## Why this completes the surface story
+- **5-minute ISR**: Pages cache for 300 seconds. After updating `.project-state/` files, the site reflects changes within 5 minutes without a redeploy.
+- **No rebuild needed for content changes**: Adding milestones, decisions, risks, people, or blog posts requires no rebuild — the next page request picks up the change.
+- **Rebuild required for**: Changes to the website source code (components, pages, styles), dependency updates, or environment variable changes.
+- **Auth**: The JWT expires after 30 days by default. Users log in again after expiry. Changing `AUTH_SECRET` invalidates all existing sessions immediately.
+- **scsiwyg outage**: Blog and wiki pages degrade gracefully — they show empty states rather than crashing if the scsiwyg API is unreachable.
 
-The suite started with three external surfaces routed through `project-notifier`: Slack, Gmail (drafts only), and Google Calendar. `project-blog-publisher` added the scsiwyg narrative surface. `project-website-publisher` adds the *reference* surface — stable URLs for the documents that don't change daily but get referenced constantly.
+---
 
-Together those four surfaces let the suite send any kind of project artifact to its appropriate channel:
-- **Action / coordination** → Slack post (project-notifier)
-- **External / formal** → Gmail draft (project-notifier)
-- **Time-bound** → Calendar event (project-notifier)
-- **Narrative / running story** → scsiwyg blog post (project-blog-publisher)
-- **Reference / always-current** → website page (project-website-publisher)
+## Differences from v1.x
 
-Every artifact has a home. The substrate (`.project-state/`) remains the single source of truth for all of them.
+The v1.x website described in earlier documentation used a static MDX pipeline inside `.project-state/website/` with a `[slug].tsx` pages-router route. That approach required a rebuild and redeploy on every document change.
 
-## Acceptance test for a new project's website setup
+The v2.0 template (this document) replaces that with:
 
-A project's website is "done enough to use" when:
+| v1.x | v2.0 |
+|---|---|
+| Static MDX compilation at build time | Server components reading YAML/MD at request time |
+| Pages Router | App Router |
+| Content in `.project-state/website/content/` | Content read directly from `.project-state/` |
+| Rebuild on every doc change | ISR — no rebuild needed for content changes |
+| Hardcoded visibility tiers in build | Auth middleware; all routes password-protected |
+| Hardcoded stakeholder colours | Dynamic palette from `manifest.stakeholders.organizations` |
+| Hardcoded `Baseline-Reports-2026-04-24` | Auto-discovered `REPORTS_DIR` |
+| `/collaboration` page (project-specific) | `/context` page reads `references/context.md` |
 
-1. Visiting the production URL serves the homepage with navigation generated from `documents/index.yaml`.
-2. `https://<project>.vercel.app/docs/cadence-at-a-glance` (or your equivalent canonical doc) renders correctly with the right visibility banner.
-3. `https://<project>.vercel.app/downloads/<tracker-filename>` serves the current xlsx.
-4. A test doc promoted to `documents/published/` appears at its URL within one rebuild cycle.
-5. A test doc marked `visibility: public` without `publication_review.status: approved` causes the build to fail with the expected error.
-6. The robots.txt at `https://<project>.vercel.app/robots.txt` lists the right Allow / Disallow rules.
-
-If all six pass, you're ready to start using the website as the share-link surface for the project.
+The v1.x pattern is no longer supported. Projects using v1.x should migrate by replacing their `.project-state/website/` with a copy of `templates/website/` and updating their deploy configuration.

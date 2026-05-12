@@ -7,59 +7,58 @@ Every skill in this suite reads and writes `.project-state/`. Skills are grouped
 - **State is the source of truth.** Skills are verbs that act on state; they never hold state themselves.
 - **One skill = one coherent job.** Don't fuse unrelated jobs into one skill.
 - **Orchestrator is thin.** The orchestrator decides *which* skill to call next; it doesn't do the work.
-- **Surfaces are last-mile.** Slack/Gmail/Calendar live behind `project-notifier`; the scsiwyg blog lives behind `project-blog-publisher`; the project website lives behind `project-website-publisher` (v1.1). The rest of the suite doesn't care which channel an artifact lands in.
+- **Packs configure behavior.** Six skills are generic by default; compliance packs (pic-pcais, client-services, board-investor, agile-default, open-source-community) configure them for a specific funder, customer type, or discipline.
+- **Surfaces are last-mile.** Slack/Gmail/Calendar live behind `project-notifier`; the scsiwyg blog lives behind `project-blog-publisher`; the project website lives behind `project-website-publisher`. The rest of the suite doesn't care which channel an artifact lands in.
 
 ## P0 — Foundations (build first; nothing else works without these)
 
 ### `project-state`
-The memory layer. Read / write / list / validate every entity in `.project-state/`. Enforces schema and concurrency rules. Every other skill calls through this. Mirrors what `narrative-state` does for Woowoo.
+The memory layer. Read / write / list / validate every entity in `.project-state/`. Enforces schema and concurrency rules. Every other skill calls through this.
 - **Reads:** everything
 - **Writes:** everything
 - **Triggers on:** "what's the state", "record a decision", "create milestone M03", "log this activity"
 
 ### `project-scaffolder`
-One-shot: initialize a `.project-state/` in a new folder. Run once per project. The current project is already scaffolded.
-- **Writes:** full tree + manifest + state.json + phase skeletons
+One-shot: initialize a `.project-state/` in a new folder. Run once per project. In v2.0 also seeds the reporting matrix from loaded packs.
+- **Writes:** full tree + manifest + state.json + phase skeletons + reporting-matrix.yaml
 - **Triggers on:** "set up a new project", "scaffold project-state"
 
 ## P1 — Core operations (run the project)
 
 ### `project-phase-gate`
-Manage lifecycle transitions: LOI → Approval → Planning → Execution → Closeout → Archive. Enforces required artifacts at each gate; refuses to transition if gate artifacts are missing. Writes transition events to the activity log.
-- **Reads:** manifest, phases, documents
+Manage lifecycle phase transitions. In v2.0, phases are user-defined via presets (`grant-default`, `agile-default`, `waterfall-default`, `client-engagement-default`, `open-source-default`, or custom). Active pack can augment gate criteria. Enforces required artifacts at each gate; refuses to transition if gate artifacts are missing.
+- **Reads:** manifest (phases.preset), phase preset YAML, pack phase-gate profile, documents, state.json
 - **Writes:** state.json, phase manifests, logs
 - **Triggers on:** "move to execution", "can we close phase 3?", "what's blocking the gate?"
 
 ### `project-document-curator`
-Ingest a new doc into `documents/inbox/`, classify it (proposal, MPA, workbook, template, minutes, claim form, invoice, publication, ...), assign source-of-truth status if appropriate, index it into `documents/index.yaml`, and cross-reference it from the manifest or phase.
+Ingest a new doc into `documents/inbox/`, classify it, assign source-of-truth status if appropriate, index it into `documents/index.yaml`, and cross-reference it from the manifest or phase.
 - **Reads:** documents/, manifest
 - **Writes:** documents/index.yaml, symlinks into source-of-truth
 - **Triggers on:** "I just dropped a doc", "classify this file", "catalog the inbox"
 
 ### `project-milestone-manager`
-CRUD milestones. Updates `percent_complete`, `technical_progress`, status. Propagates to quarterly-claim drafts. Reconciles with MPA Schedule A.
+CRUD milestones. Updates `percent_complete`, `technical_progress`, status. Propagates to claim drafts. Reconciles with MPA Schedule A.
 - **Reads:** milestones/, MPA workbook
 - **Writes:** milestones/, tracking/milestones.xlsx
 - **Triggers on:** "update M03 progress", "what milestones are at risk?", "recompute overall %"
 
 ### `project-status-reporter`
-Generates status reports in multiple formats from state:
+Generates status reports in multiple formats from state. Reads the reporting matrix to determine which reports are due.
 - **Weekly report** (team / Slack-format)
-- **Steering Committee pack** (docx, following PIC Appendix A agenda)
-- **PIC quarterly claim draft** (xlsx using PIC's MS & financial tracking form)
+- **Review-meeting pack** (docx, following the active pack's agenda template)
+- **Funder claim draft** (xlsx using the active pack's claim form)
 - **Ad-hoc status** (prose for email)
 - **Dashboard snapshot** (one-pager)
-- **Triggers on:** "weekly report", "prep SC pack for next meeting", "draft the claim", "status update please"
+- **Triggers on:** "weekly report", "prep the pack for next meeting", "draft the claim", "status update please"
 
 ## P2 — Surfaces & automation (wire in delivery)
 
 ### `project-orchestrator`
-The conductor. Decides what to do next based on state. Run on-demand or scheduled. Examples:
-- "It's Monday → draft the weekly report"
-- "SC meeting in 7 days → generate agenda + pack and open a draft email"
-- "Claim due in 14 days → draft claim + ping Finance rep"
-- "Phase 3 artifacts all present → offer to transition to execution"
-- **Triggers on:** "run the project", "what should I do this week", "what's pending"
+The conductor. Reads the reporting matrix + current state. Decides what to do next based on date, state, deadlines. Run on-demand or scheduled.
+- **Reads:** reporting-matrix.yaml, state.json, manifest, milestones, documents/inbox/
+- **Writes:** reports/adhoc/ (orchestrator snapshots), logs
+- **Triggers on:** "run the project", "what should I do this week", "what's pending", "morning briefing"
 
 ### `project-notifier`
 Routes artifacts to surfaces. Takes a (payload, recipients, channel) tuple and delivers via Slack/Gmail/Calendar. Always drafts Gmail (per manifest). Never sends a message without explicit go-ahead.
@@ -67,37 +66,54 @@ Routes artifacts to surfaces. Takes a (payload, recipients, channel) tuple and d
 - **Writes:** logs, drafts
 - **Triggers on:** "post the weekly to Slack", "email the PIC PM a draft", "calendar the SC"
 
-### `project-sc-meeting`
-Full SC lifecycle: schedule (with 5-business-day notice + 3-month lookahead), build agenda from the PIC standard template, assemble the pack (from status-reporter), capture minutes, distribute within 5 business days, file action items back as tasks.
-- **Reads:** manifest, milestones, changes, ip, publications
-- **Writes:** reports/sc-meetings/, communications/meeting-minutes/, calendar events
-- **Triggers on:** "schedule next SC", "prep the pack", "capture minutes"
+### `project-review-meeting`
+Generic recurring review meeting lifecycle — schedule, build agenda, assemble pack, capture minutes, distribute, file action items. Pack profile defines the meeting name, attendees, cadence, and agenda template. PIC pack profile reproduces SC meeting behavior.
+- **Reads:** manifest, milestones, changes, ip, publications/; pack review-meeting profile
+- **Writes:** reports/sc-meetings/ (or equivalent), communications/meeting-minutes/, calendar events
+- **Calls:** project-status-reporter (pack), project-notifier
+- **Triggers on:** "schedule next SC", "prep the pack", "capture minutes", "schedule next review meeting"
 
-### `project-claim-prep`
-Quarterly claim automation: assembles the PIC MS & financial tracking form for Apr 20 / Jul 20 / Oct 20 / Jan 20 deadlines from milestones + financials, routes to Finance rep for review, tracks submission and payment status.
-- **Reads:** milestones/, tracking/budget.xlsx, PIC-provided form
-- **Writes:** reports/claims/, filled xlsx
-- **Triggers on:** "draft the Q2 claim", "what's in next month's claim?", "claim status"
+### `project-funder-reporting`
+Generic stakeholder-bound recurring reports — assembles the claim/invoice/report per the active pack profile, routes to the appropriate recipient, tracks submission and payment status. PIC pack profile reproduces quarterly claim behavior (Apr/Jul/Oct/Jan 20 deadlines).
+- **Reads:** milestones/, tracking/budget.xlsx, pack funder-reporting profile (template, cadence, recipient)
+- **Writes:** reports/claims/ (or equivalent), filled xlsx/pdf
+- **Calls:** project-notifier
+- **Triggers on:** "draft the Q2 claim", "what's in next month's claim?", "claim status", "draft funder report"
 
 ### `project-change-register`
-Distinguishes material vs. non-material per PIC criteria. Files change-log entries for non-material; drafts Change Orders for material and routes through PIC → Steering Committee approval flow.
+Distinguishes material vs. non-material per the active pack's criteria. Files change-log entries for non-material; drafts Change Orders for material and routes through approval flow.
 - **Reads:** manifest, milestones
 - **Writes:** changes/
 - **Triggers on:** "log a change", "we need to swap vendor", "this needs a change order?"
 
 ### `project-blog-publisher`
-Progress posts to scsiwyg. Respects publication-review discipline from MPA (30/14 day Steering Committee review before public post). Drafts from weekly reports and milestone completions.
+Progress posts to scsiwyg. Respects publication-review discipline (30/14-day Steering Committee review before public post). Drafts from weekly reports and milestone completions. Defers to `project-external-comms` for formal publication proposal registration.
 - **Reads:** reports, milestones, publications/
 - **Writes:** communications/blog-drafts/, scsiwyg posts
 - **Triggers on:** "blog post about M02 completion", "what should we post this month?"
 
-### `project-website-publisher` (NEW v1.1)
-Static project website hosted on Vercel/Netlify/Cloudflare Pages/GitHub Pages. Mirrors `documents/published/` to stable URLs (`/docs/<slug>`) with visibility tiers (`team`/`consortium`/`public`). Auto-deploys on `documents/published/` changes. Refuses to deploy `public`-marked docs whose MPA publication review hasn't cleared. Provides `what-url(slug)` for `project-notifier` so emails contain stable links instead of attachments. See `docs/PROJECT-WEBSITE.md` for the full integration reference.
+### `project-website-publisher`
+Static project website hosted on Vercel/Netlify/Cloudflare Pages/GitHub Pages. Mirrors `documents/published/` to stable URLs (`/docs/<slug>`) with visibility tiers (`team`/`consortium`/`public`). Auto-deploys on `documents/published/` changes. Refuses to deploy `public`-marked docs whose publication review hasn't cleared. Provides `what-url(slug)` for `project-notifier` so emails contain stable links instead of attachments.
 - **Reads:** documents/published/, documents/index.yaml, manifest, tracking/, activity log
-- **Writes:** website/content/docs/, website/public/downloads/, website/public/images/, state.json (deploy history)
-- **Calls:** project-state, project-notifier, project-publications (clearance check)
+- **Writes:** website/content/docs/, website/public/downloads/, state.json (deploy history)
+- **Calls:** project-state, project-notifier, project-external-comms (clearance check)
 - **Called by:** project-orchestrator, project-document-curator, user (manual rebuild)
 - **Triggers on:** "publish to the site", "regenerate the website", "deploy the docs", "what URL for [doc]"
+
+### `project-doc-suite-generator`
+⚠️ **Deprecated in v3.0.** Use `project-doc-suite` instead. This skill still functions on v2.x: generates the governance Office bundle (index, tracker xlsx, project plan, risk register, milestone specs, architecture overview, roadmap/KPIs) from `.project-state/` only. Will be removed in v3.1.
+- **Reads:** milestones/, decisions/, risks/, manifest, state.json, tracking/
+- **Writes:** reports/baseline/Baseline-Reports-YYYY-MM-DD/
+- **Calls:** project-state
+
+### `project-doc-suite` _(v3.0)_
+**Unified documentation suite generator.** Merges `.project-state/` substrate data with a live codebase scan into a shared context object, then produces 15 non-overlapping documents — governance Office files enriched with technical context, two unified strategic+technical markdown docs (replacing the duplicate Architecture-Overview + technical-spec pair and the duplicate Roadmap + business-benefits pair), and the full software insight suite. Replaces both `project-doc-suite-generator` and `doc-suite-generator-v2` for projects that have a `.project-state/` substrate.
+- **Reads:** milestones/, decisions/, risks/, manifest, state.json, reporting-matrix.yaml, codebase scan
+- **Writes:** reports/unified-suite/YYYY-MM-DD/ (15 documents)
+- **Calls:** project-state, project-scanner, readme-standardizer, technical-specification, business-benefit-analysis, innovation-themes, extensibility-analysis, work-zone-mapper, technical-readiness, worksona-themes, worksona-first-principles, project-website-publisher, project-notifier
+- **Called by:** project-orchestrator (baseline routine), project-phase-gate (on transition), user
+- **Triggers on:** "generate docs", "unified suite", "document this project", "build the suite", "report bundle"
+- **See:** `docs/UNIFIED-SUITE-V3.md` for full design and document map
 
 ## P3 — Polish
 
@@ -106,19 +122,19 @@ Gets a new team member up to speed. Generates a personalized onboarding brief fr
 - **Triggers on:** "onboard Alice from Partner2"
 
 ### `project-ip-tracker`
-Ongoing IP disclosures to PIC Director of IP, abstract tracking, annual questionnaire prep.
+IP disclosures with configurable recipient via pack profile. PIC pack profile routes to PIC Director of Data and IP. Tracks annual questionnaire prep.
 - **Triggers on:** "record an IP disclosure", "prep the annual IP update"
 
-### `project-publications`
-Tracks proposed publications through the 30/14-day SC review, funding acknowledgements, pre-publication confidentiality review.
-- **Triggers on:** "we want to publish", "publication status"
+### `project-external-comms`
+Generic external-communications review pipeline. Pack profile defines review windows by content class. PIC pack profile reproduces 30-day full-publication and 14-day abstract review with PIC + ISED funding acknowledgement enforcement and patent-filing-delay coordination.
+- **Triggers on:** "we want to publish", "submit an abstract", "press release", "media interview", "publication review", "clear for external"
 
 ### `project-lessons`
 Captures Lessons Learned continuously; summarizes for closeout.
 - **Triggers on:** "capture a lesson", "lessons so far"
 
 ### `project-archive`
-Closes out: final reports, IP final, FTE confirmation, holdback-release tracking, archive phase.
+Generic closeout core + pack-driven closeout items. PIC pack contributes FTE confirmation, holdback release, final reports, annual questionnaire close-out.
 - **Triggers on:** "close the project", "are we ready to close?"
 
 ## Dependencies
@@ -129,8 +145,8 @@ project-scaffolder  (one-shot)
        ▼
 project-state  ◄─── every other skill depends on this
        │
-       ├── project-phase-gate
-       ├── project-document-curator
+       ├── project-phase-gate ──► project-doc-suite (on transition)
+       ├── project-document-curator ──► project-website-publisher (on publish)
        ├── project-milestone-manager  ──► project-status-reporter
        ├── project-change-register   ──► project-status-reporter
        │                                     │
@@ -139,12 +155,14 @@ project-state  ◄─── every other skill depends on this
        │                                     │
        │                                     └──► project-blog-publisher ──► scsiwyg
        │
-       └── project-orchestrator ──► calls any of the above based on state + cadence
+       └── project-orchestrator ──► calls any of the above based on state + matrix
 
-project-sc-meeting          depends on status-reporter + notifier
-project-claim-prep          depends on milestone-manager + notifier
+project-review-meeting      depends on status-reporter + notifier
+project-funder-reporting    depends on milestone-manager + notifier
+project-doc-suite-generator depends on state (deprecated — use project-doc-suite)
+project-doc-suite           depends on state + codebase scan + specialist skills
 project-ip-tracker          depends on state + notifier
-project-publications        depends on state + notifier
+project-external-comms      depends on state + notifier
 project-lessons             depends on state
 project-onboarder           depends on state
 project-archive             depends on phase-gate + status-reporter
@@ -152,7 +170,7 @@ project-archive             depends on phase-gate + status-reporter
 
 ## Where skills live
 
-Skills live in `/mnt/.claude/skills/` (project-state SKILL.md, project-phase-gate SKILL.md, etc.) so the whole team can invoke them from any folder. The *data* they read lives in this project's `.project-state/`. A skill's job is to know *how* to read/write state; it has no knowledge of *which* project it's in — it finds `.project-state/` by walking up from the current working directory.
+Skills live in `~/.claude/skills/` (symlinked per-teammate from the shared drive per INSTALL.md). The *data* they read lives in the project's `.project-state/`. A skill's job is to know *how* to read/write state; it has no knowledge of *which* project it's in — it finds `.project-state/` by walking up from the current working directory.
 
 This separation means:
 - Skills are portable across projects (next PCAIS grant, next research engagement)

@@ -1,200 +1,133 @@
-# Installing v2.0
+# Installing project-state
 
-This is the install guide for the v2.0 generic core + compliance packs. If you're migrating from v1.x, see `docs/MIGRATION-V1-TO-V2.md` instead — that's a different (cheaper) flow.
+## Option A — Claude Code plugin (recommended)
 
-## Pre-requisites
+### Add the marketplace and install
 
-- Shared drive accessible to all teammates (Google Drive, OneDrive, Dropbox, or any sync'd FS)
-- Each teammate has Claude with skill-loading support (Claude Code / Agent SDK / Cowork)
-- (Optional) Slack / Gmail / Google Calendar / scsiwyg / Vercel MCPs connected if you want surface routing
-
-## The eighteen v2.0 skills
-
-### P0 — Foundations
-| Skill | Purpose |
-|---|---|
-| `project-state` | Memory layer; every other skill routes through it. |
-| `project-scaffolder` | Initialize a new `.project-state/`; in v2.0, also seeds the reporting matrix from packs. |
-
-### P1 — Core operations
-| Skill | Purpose |
-|---|---|
-| `project-phase-gate` | User-defined phases via presets + pack overrides. |
-| `project-document-curator` | Classify/index/promote project documents. |
-| `project-milestone-manager` | CRUD milestones; %_complete + technical_progress. |
-| `project-status-reporter` | Multi-format status reports; reads matrix entries. |
-
-### P2 — Surfaces & automation
-| Skill | Purpose |
-|---|---|
-| `project-orchestrator` | Calendar-aware conductor; reads matrix and dispatches. |
-| `project-notifier` | Slack/Gmail (drafts)/Calendar routing. |
-| `project-review-meeting` | **NEW name** — generic meeting lifecycle (was `project-sc-meeting`). |
-| `project-funder-reporting` | **NEW name** — generic stakeholder-bound reports (was `project-claim-prep`). |
-| `project-change-register` | Material vs. non-material change classification. |
-| `project-blog-publisher` | scsiwyg bridge with publication-review respect. |
-| `project-website-publisher` | Static project website (added in v1.1). |
-
-### P3 — Polish
-| Skill | Purpose |
-|---|---|
-| `project-onboarder` | Personalized onboarding briefs. |
-| `project-ip-tracker` | IP disclosures with configurable recipient (was hard-wired to PIC). |
-| `project-external-comms` | **NEW name** — generic external-comms review (was `project-publications`). |
-| `project-lessons` | Continuous lessons-learned capture + closeout summary. |
-| `project-archive` | Generic closeout core + pack-driven items. |
-
-## Fresh install (new project, no v1.x to migrate)
-
-### Step 1 — Unzip
-
-```bash
-cd /path/to/your-project-shared-drive
-unzip pic-project-skills-v2.0.zip
-mkdir -p .project-state
-mv pic-project-skills-v2.0/skills .project-state/skills
-mv pic-project-skills-v2.0/packs .project-state/packs
-mv pic-project-skills-v2.0/templates .project-state/templates
-mv pic-project-skills-v2.0/docs .project-state/docs
+```
+/plugin marketplace add github:atomic47/project-state
+/plugin install project-state@atomic47
 ```
 
-### Step 2 — Symlink the 19 skills (per-teammate)
+All 23 skills become available immediately, namespaced as `project-state:project-*`.
+
+### Set up your first project
+
+Navigate to the root of your project's shared drive folder, then run:
+
+```
+/project-scaffolder
+```
+
+The scaffolder asks about your project, selects a compliance pack, and creates `.project-state/` ready to go. Takes about 5 minutes.
+
+### Verify
+
+```
+What phase are we in?          →  project-phase-gate
+Show me the milestones         →  project-milestone-manager
+What should I do this week?    →  project-orchestrator
+Show the reporting matrix       →  project-state
+```
+
+---
+
+## Option B — Local install from zip
+
+If you received the plugin as a zip file:
+
+```
+/plugin install --local /path/to/project-state.zip
+```
+
+Then follow the same setup steps from Option A.
+
+---
+
+## Option C — Manual symlinks (advanced / contributor workflow)
+
+For contributors working directly in the repo, or for teams on shared drives that pre-date plugin support:
 
 ```bash
 cd ~/.claude/skills
 
-for skill in project-state project-scaffolder \
-             project-phase-gate project-document-curator \
-             project-milestone-manager project-status-reporter \
-             project-orchestrator project-notifier \
-             project-review-meeting project-funder-reporting \
-             project-change-register project-blog-publisher \
-             project-website-publisher \
-             project-onboarder project-ip-tracker \
-             project-external-comms project-lessons \
-             project-archive ; do
-  ln -s "/path/to/.project-state/skills/$skill" .
+for skill in \
+  project-state project-scaffolder \
+  project-phase-gate project-document-curator \
+  project-milestone-manager project-status-reporter \
+  project-orchestrator project-notifier \
+  project-review-meeting project-funder-reporting \
+  project-change-register project-blog-publisher \
+  project-website-publisher project-doc-suite \
+  project-sred-tracker project-sred-reviewer \
+  project-onboarder project-ip-tracker \
+  project-external-comms project-lessons \
+  project-archive project-onboarding project-harvester
+do
+  ln -sf "/path/to/project-state/skills/$skill" .
 done
 ```
 
-### Step 3 — Copy the pack(s) you want
+Replace `/path/to/project-state` with the actual path to this repo.
 
-```bash
-# For PIC consortium projects:
-cp -r /path/to/.project-state/packs/pic-pcais /path/to/.project-state/packs/
-# For client engagements:
-cp -r /path/to/.project-state/packs/client-services /path/to/.project-state/packs/
-# For startups with boards:
-cp -r /path/to/.project-state/packs/board-investor /path/to/.project-state/packs/
-# Multiple packs can coexist.
-```
+---
 
-(If you unzipped into `.project-state/`, the packs are already in place under `packs/`.)
+## Compliance packs
 
-### Step 4 — Bootstrap
+When the scaffolder asks which pack to load, choose based on your project type:
 
-```bash
-ask claude: "scaffold a new v2 project"
-```
-
-The scaffolder walks you through:
-
-- Project name, kind, dates, one-liner
-- Stakeholders (organizations, contacts, roles)
-- Which packs to load
-- Phase preset selection
-- Surface configuration (Slack/Gmail/Calendar/blog/website)
-- Then runs `seed-matrix --pack <each-loaded-pack>` to populate `reporting-matrix.yaml`
-
-### Step 5 — Verify
-
-```bash
-ask claude: "list the project-* skills"
-ask claude: "what phase are we in?"
-ask claude: "show the reporting matrix"
-```
-
-You should see all 19 skills, the current phase, and the seeded matrix entries.
-
-## Migration from v1.x
-
-If you have an existing v1.x project, **do not run a fresh install** — it'll create a parallel substrate. Use the migration script instead:
-
-```bash
-python3 /path/to/pic-project-skills-v2.0/scripts/migrate-v1-to-v2.py /path/to/.project-state --pack pic-pcais
-```
-
-Full walkthrough: `docs/MIGRATION-V1-TO-V2.md`. Takes about 30 minutes. Reversible.
-
-## Verification cheat-sheet
-
-| Ask | Should invoke |
+| Pack | Choose if… |
 |---|---|
-| "What phase are we in?" | `project-phase-gate` |
-| "Show me the milestones" | `project-milestone-manager` |
-| "What should I do this week?" | `project-orchestrator` |
-| "Draft the next [stakeholder] report" | `project-funder-reporting` |
-| "Schedule the next [meeting kind]" | `project-review-meeting` |
-| "Show the reporting matrix" | `project-state` |
-| "Seed reporting matrix from packs" | `project-scaffolder` |
-| "Publish to the project website" | `project-website-publisher` |
-| "Log a change — we're swapping vendor" | `project-change-register` |
-| "Capture a lesson learned" | `project-lessons` |
-| "Onboard [name] from [org]" | `project-onboarder` |
-| "Log an IP disclosure" | `project-ip-tracker` |
-| "We want to publish [thing]" | `project-external-comms` |
-| "Start project closeout" | `project-archive` |
+| `agile-default` | Engineering team, Scrum/Kanban, no external funder |
+| `board-investor` | Startup with board reporting obligations |
+| `client-services` | Client-facing engagement, QBR cadence |
+| `open-source-community` | Community-governed open-source project |
+| `sred-canada` | Canadian project claiming SR&ED tax credits |
+
+You can load multiple packs. Load none and the suite runs with bare presets — useful for custom configurations.
+
+The `pic-pcais` pack (for Protein Industries Canada consortiums) is distributed separately. Contact [david@atomic47.co](mailto:david@atomic47.co) if you need it.
+
+---
+
+## Optional: project website
+
+The `templates/website/` directory contains a Next.js App Router starter that renders `.project-state/` as a live team website. To set it up:
+
+```bash
+cp -r /path/to/project-state/templates/website ./website
+cd website
+npm install
+```
+
+See `docs/PROJECT-WEBSITE.md` for the full setup and deployment guide.
+
+---
 
 ## Updating
 
-A pack updated by its maintainer (e.g. PIC publishes new PM Guide → `pic-pcais` v1.1):
+To update the plugin to the latest version:
 
-```bash
-cd /path/to/.project-state/packs/pic-pcais
-# Replace files with the new version
-# Bump pack.version in manifest.yaml is automatic if you replace the whole folder
+```
+/plugin update project-state@atomic47
 ```
 
-A core skill updated:
+To update a specific pack after a new version is released, replace the pack directory in `.project-state/packs/<pack-id>/` with the new version.
 
-```bash
-cd /path/to/.project-state/skills/project-<name>
-# Replace SKILL.md
-# Symlinks pick up the change instantly
-```
+---
 
-## Description length constraint (still applies)
+## Description length constraint (for contributors)
 
-Every SKILL.md frontmatter description must be ≤1024 characters. All 18 v2.0 skills comply. Verify with:
+Every `SKILL.md` frontmatter `description` field must be ≤ 1024 characters. Verify with:
 
 ```bash
 python3 -c "
 import re, glob
-for f in sorted(glob.glob('.project-state/skills/*/SKILL.md')):
-    m = re.search(r'^description:\s*(.+?)(?=\n\w|\n---)', open(f).read(), re.MULTILINE | re.DOTALL)
-    if m: print(f, len(m.group(1).strip().strip('\"')))
+for f in sorted(glob.glob('skills/*/SKILL.md')):
+    m = re.search(r'^description:\s*[\"\'](.*?)[\"\']', open(f).read(), re.DOTALL)
+    if m:
+        n = len(m.group(1))
+        flag = ' *** OVER LIMIT ***' if n > 1024 else ''
+        print(f'{f}: {n} chars{flag}')
 "
 ```
-
-## Setting up the project website (optional, from v1.1)
-
-If you want stable URLs for your reference docs:
-
-```bash
-ask claude: "init the project website"
-ask claude: "regenerate and deploy the website"
-```
-
-See `docs/PROJECT-WEBSITE.md` for the full setup.
-
-## Authoring your own pack
-
-If your project's funder/customer/industry isn't covered by the shipped packs:
-
-1. Read `docs/PACK-AUTHORING.md`
-2. Use `packs/pic-pcais/` as a reference (it's the production-grade example)
-3. Drop your pack into `.project-state/packs/<your-pack-id>/`
-4. Add it to `manifest.yaml.project.packs_loaded`
-5. Run `ask claude: "seed reporting matrix from packs"`
-
-If your pack is reusable, contribute it back. See `docs/PACK-CATALOG.md` for the contribution flow (lightweight for v2.0; formal pack registry planned for v2.1+).

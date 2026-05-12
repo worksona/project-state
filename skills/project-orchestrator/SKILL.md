@@ -81,10 +81,12 @@ Every line links to the skill that handles it, so the user can say "yes, do the 
 The orchestrator understands named routines:
 
 ### `daily` (optional — only if the team wants a daily check)
-- Tail activity log since yesterday
-- Check `at_risk` and `blocked` milestones
-- Flag any new doc in inbox
-- Report any Gmail drafts from yesterday not yet sent (if integrated)
+1. **Run `project-harvester`** — pull fresh intel from Slack/Gmail/GDocs/scsiwyg into `documents/inbox/`. Run before anything else so the inbox is populated before curator recommendations are made.
+2. **Run `project-document-curator`** — classify any new inbox docs; link to milestones/decisions where appropriate.
+3. Tail activity log since yesterday
+4. Check `at_risk` and `blocked` milestones
+5. Flag any unclassified docs remaining in inbox
+6. Report any Gmail drafts from yesterday not yet sent (if integrated)
 
 ### `weekly` (Monday)
 1. Call `project-status-reporter` to draft the weekly report
@@ -100,13 +102,13 @@ The orchestrator understands named routines:
 - Nudge IP disclosure review
 
 ### `quarter-close` (around the 15th of Apr/Jul/Oct/Jan)
-- Call `project-claim-prep` to assemble the quarterly claim
+- Call `project-funder-reporting` to assemble the quarterly claim
 - Draft the PIC PM cover email via `project-notifier` (Gmail draft)
 - Nudge Finance Rep for member claim packages
 - Schedule the SC meeting if one is due
 
 ### `sc-prep` (10 business days before a SC meeting)
-- Call `project-sc-meeting` to build agenda + pack
+- Call `project-review-meeting` to build agenda + pack
 - Invite check via `project-notifier`
 - Circulate agenda 5+ business days prior
 

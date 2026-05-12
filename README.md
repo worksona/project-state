@@ -1,149 +1,173 @@
 # project-state
 
-**Version:** 2.0
-**Released:** 2026-04-27
-**Purpose:** A generic operational substrate for any multi-stakeholder project — grant-funded consortiums, client engagements, startups with boards, open-source communities, internal product teams. Built to handle the multi-stakeholder reporting problem that eats Project Lead time on every project regardless of funding source.
+**A Claude Code plugin that turns any multi-stakeholder project into a system where routine reporting is a byproduct of normal work.**
 
-This repo contains **eighteen `project-*` skills** plus **five reference compliance packs** that, together with a structured filesystem facility called `.project-state/`, turn any multi-stakeholder project into a system where routine reporting becomes a byproduct of normal work.
+Built by [Atomic47](https://atomic47.co) · v3.0 · [david@atomic47.co](mailto:david@atomic47.co)
 
-## What's new in v2.0
+---
 
-**v2.0 splits the suite into a generic core plus compliance packs.** Twelve skills are unchanged from v1.1. Six are abstracted (renamed and made profile-driven). Pack-specific behavior moves into compliance packs that reproduce project-type-specific experience exactly. Other packs ship for client engagements, board reporting, agile teams, and open-source projects.
+## What it is
 
-The single most important addition is the **stakeholder reporting matrix** — a YAML in `.project-state/reporting-matrix.yaml` that encodes "for each stakeholder group, what report at what cadence in what format on which surface." This is what generalizes the system from grant-management to multi-stakeholder reporting.
+project-state is a **plain-filesystem operational substrate** for multi-stakeholder projects — consortium grants, client engagements, startups with boards, open-source communities, internal product teams. It stores project state as typed YAML, JSON, NDJSON, and markdown files in a `.project-state/` directory on your shared drive. No database, no API, no new SaaS tool.
 
-See `docs/MIGRATION-V1-TO-V2.md` for the migration path from v1.x; see `CHANGELOG.md` for the full diff.
+The plugin ships **23 `project-*` skills** that read and write this substrate. Together they handle the full project lifecycle:
 
-## What you get
+| Tier | Skills |
+|---|---|
+| **Foundation** | `project-state` (memory layer), `project-scaffolder` (init) |
+| **Core operations** | `project-phase-gate`, `project-document-curator`, `project-milestone-manager`, `project-status-reporter` |
+| **Surfaces & automation** | `project-orchestrator`, `project-notifier`, `project-review-meeting`, `project-funder-reporting`, `project-change-register`, `project-blog-publisher`, `project-website-publisher`, `project-doc-suite`, `project-sred-tracker`, `project-sred-reviewer` |
+| **Polish** | `project-onboarder`, `project-ip-tracker`, `project-external-comms`, `project-lessons`, `project-archive`, `project-onboarding`, `project-harvester` |
 
-- **19 skills** (`project-*`) — twelve unchanged from v1.1 + six abstracted to load behavior from pack profiles.
-- **5 reference packs** — `pic-pcais` (production), `client-services`, `board-investor`, `agile-default`, `open-source-community` (all starter).
-- **Documentation** — README, INSTALL, CHANGELOG, MIGRATION-V1-TO-V2, PACK-AUTHORING, PACK-CATALOG, REPORTING-MATRIX, plus architecture / schema / concurrency / website docs.
-- **Templates** — v2 manifest, reporting matrix template, five phase presets (grant/agile/waterfall/client-engagement/open-source), plus the website starter.
-- **Migration script** — `scripts/migrate-v1-to-v2.py` for non-destructive v1.x → v2.0 conversion.
+The substrate is the source of truth. Reports, meeting packs, website pages, and Slack updates are generated *from* the substrate — not maintained in parallel.
 
-## Architecture at a glance
+---
+
+## Quick start
+
+### 1. Install the plugin
+
+Add the Atomic47 plugin marketplace and install:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  SURFACES — Slack · Gmail (drafts) · Calendar · Blog · Web  │
-├─────────────────────────────────────────────────────────────┤
-│  SKILLS — 18 project-* skills (12 unchanged + 6 abstracted) │
-│           ┌──── reads profile YAMLs from ────┐              │
-│           ▼                                   ▼              │
-│  PACKS — pic-pcais · client-services · board-investor ·     │
-│          agile-default · open-source-community              │
-│           ┌──── seeds entries into ────┐                     │
-│           ▼                             ▼                     │
-│  REPORTING MATRIX — who needs what, when, where             │
-├─────────────────────────────────────────────────────────────┤
-│  SUBSTRATE — .project-state/ on shared drive (filesystem)   │
-└─────────────────────────────────────────────────────────────┘
+/plugin marketplace add github:atomic47/project-state
+/plugin install project-state@atomic47
 ```
 
-## The eighteen skills
+Or install from a local zip:
 
-### Foundation
-| Skill | Role |
+```
+/plugin install --local /path/to/project-state.zip
+```
+
+### 2. Set up a new project
+
+Navigate to your project's shared drive root, then:
+
+```
+/project-scaffolder
+```
+
+The scaffolder walks you through project details, picks a compliance pack, and creates a ready-to-use `.project-state/` facility.
+
+### 3. Start using it
+
+```
+What phase are we in?
+Show me the milestones
+Draft the weekly status report
+Schedule the next review meeting
+What should I work on this week?
+```
+
+---
+
+## Compliance packs
+
+Packs configure the skills for a specific funding model or organisational context. Five generic packs ship with the plugin:
+
+| Pack | For |
 |---|---|
-| `project-state` | The memory layer. Read/write/list/validate every entity. |
-| `project-scaffolder` | One-shot initializer. Now also seeds the reporting matrix from packs. |
+| `agile-default` | Engineering teams on Scrum/Kanban |
+| `board-investor` | Startups with board governance |
+| `client-services` | Client engagement / professional services |
+| `open-source-community` | Open-source projects with community contributors |
+| `sred-canada` | Canadian projects claiming SR&ED tax credits |
 
-### Core operations
-| Skill | Role |
-|---|---|
-| `project-phase-gate` | User-defined phases via presets + pack overrides. |
-| `project-document-curator` | Classify/index/promote project documents. |
-| `project-milestone-manager` | CRUD milestones; %_complete + technical_progress. |
-| `project-status-reporter` | Weekly/SC pack/claim draft/ad-hoc status. Reads matrix entries. |
+Load one or more packs at scaffolding time. The scaffolder guides you through selection. Packs configure meeting shape and cadence, funder reporting format, phase gate criteria, IP tracking, external comms review windows, and archival checklists.
 
-### Surfaces & automation
-| Skill | Role |
-|---|---|
-| `project-orchestrator` | Calendar-aware conductor. Reads matrix, dispatches generators. |
-| `project-notifier` | Slack/Gmail (drafts)/Calendar routing. |
-| `project-review-meeting` | Generic meeting lifecycle; pack profile defines name, attendees, agenda. |
-| `project-funder-reporting` | Generic stakeholder-bound recurring reports; pack profile defines template + cadence. |
-| `project-change-register` | Material vs. non-material classification. |
-| `project-blog-publisher` | scsiwyg bridge with publication-review respect. |
-| `project-website-publisher` | Static project website with stable URLs. |
+**Building your own pack:** See `docs/PACK-AUTHORING.md`. A pack is a directory of YAML profiles — no code. If your funder or programme isn't covered, a new pack takes about an hour to author.
 
-### Polish
-| Skill | Role |
-|---|---|
-| `project-onboarder` | Personalized onboarding briefs. |
-| `project-ip-tracker` | Generic recipient via pack profile. |
-| `project-external-comms` | Generic external-comms review pipeline. |
-| `project-lessons` | Continuous lessons learned capture + closeout summary. |
-| `project-archive` | Generic closeout core + pack-driven items. |
+---
 
-## The five reference packs
+## The substrate layout
 
-| Pack | Maturity | For |
+```
+.project-state/
+├── manifest.yaml              ← project identity, stakeholders, budget, surfaces
+├── state.json                 ← current phase, counters, surface status
+├── reporting-matrix.yaml      ← what report, for whom, at what cadence
+├── milestones/                ← M01-slug.yaml … one file per milestone
+├── risks/                     ← R-01-slug.yaml … risk register
+├── decisions/                 ← YYYY-MM-DD-slug.yaml … decision log
+├── people/                    ← one yaml per person
+├── documents/                 ← working/ → published/ lifecycle
+├── changes/                   ← change-log/ and change-orders/
+├── ip/                        ← IP disclosures
+├── lessons-learned/           ← continuous capture
+├── reports/                   ← generated output (never source of truth)
+├── references/                ← context.md and other reference material
+└── logs/
+    ├── activity.ndjson        ← append-only event log
+    └── decisions.ndjson
+```
+
+All files are plain text. The shared drive *is* the database.
+
+---
+
+## Surfaces
+
+project-state routes output to five external surfaces. All are optional; each is configured in `manifest.yaml:surfaces`.
+
+| Surface | How it's used | Auth required |
 |---|---|---|
-| `pic-pcais` | production | PIC-funded PCAIS consortium projects |
-| `client-services` | starter | Consulting/client engagements with customer reporting |
-| `board-investor` | starter | PE/VC-backed startups with board cadence |
-| `agile-default` | starter | Engineering teams running Scrum/Kanban |
-| `open-source-community` | starter | Community-governed OSS projects |
+| **Slack** | Status posts, meeting notices, deployment notifications | Slack MCP |
+| **Gmail** | All email is drafted — never auto-sent | Gmail MCP |
+| **Google Calendar** | Review meeting scheduling, deadline reminders | Calendar MCP |
+| **scsiwyg** | Blog posts for milestone completions, retrospectives | scsiwyg MCP |
+| **Website** | Live team site reading `.project-state/` at runtime | Vercel/Netlify |
 
-Multiple packs can coexist on one project. See `docs/PACK-CATALOG.md` for combinations that work well.
+---
 
-## Quick install
+## Key design principles
 
-```bash
-# 1. Clone or copy this repo to your project's shared drive
-git clone https://github.com/your-org/project-state /path/to/your-project/project-state
-# or copy the folder directly
+- **State is the source of truth.** Reports are generated from state. When an artifact disagrees with state, regenerate the artifact.
+- **Review, don't author.** Gmail is always draft. Calendar events are proposed holds. Claims and public docs require human sign-off before they leave the facility.
+- **One skill = one coherent job.** The orchestrator decides which skill to call; it doesn't do the work itself.
+- **Packs configure, not code.** Pack YAML profiles drive meeting shape, report format, gate criteria. Changing your funding model means swapping a pack, not editing skills.
+- **Plain files, shared drive.** Any team member with drive access and Claude has full operational capability. No infrastructure to maintain.
 
-# 2. Symlink the 19 skills into ~/.claude/skills
-cd ~/.claude/skills
-for s in /path/to/your-project/project-state/skills/project-*; do
-  ln -s "$s" .
-done
+---
 
-# 3. Choose your pack(s) — packs are already in project-state/packs/
-#    The skills will find them at runtime via .project-state/packs/
+## The reporting matrix
 
-# 4. Bootstrap a new project
-ask claude: "scaffold a new v2 project"
-```
+`.project-state/reporting-matrix.yaml` encodes "for each stakeholder group, what report at what cadence in what format on which surface, produced by which skill." The orchestrator reads this on each tick and dispatches generators. Seeded from your loaded packs at scaffolding time and freely customisable after.
 
-For detailed steps, Cowork setup, and verification checklists, see `INSTALL.md`.
+See `docs/REPORTING-MATRIX.md` for the full schema.
 
-For migrating an existing v1.x project, see `docs/MIGRATION-V1-TO-V2.md`. About 30 minutes total.
+---
 
-## Quick start workflows
+## Who it's for
 
-| Ask | What runs |
-|---|---|
-| "What phase are we in?" | `project-phase-gate` (uses your phase preset) |
-| "Show me the milestones" | `project-milestone-manager` |
-| "What should I do this week?" | `project-orchestrator` (reads matrix + calendar) |
-| "Draft the [stakeholder] report" | `project-funder-reporting` (uses pack profile) |
-| "Schedule the next [SC/board/QBR/retro]" | `project-review-meeting` (uses pack profile) |
-| "Seed reporting matrix from packs" | `project-scaffolder seed-matrix` |
-| "Publish to the project website" | `project-website-publisher` |
-| "Set up a new project" | `project-scaffolder` |
+project-state works best for **teams of 2–20** running **projects that span months to years** with **structured reporting obligations** — consortium grants, funded R&D, client engagements, regulated product development. The overhead of maintaining the substrate pays off when you have recurring reports that would otherwise require manual assembly.
 
-## Documentation
+It is intentionally not a project management SaaS replacement. It is a structured filesystem that Claude reads and writes fluently, combined with skills that know what to do with that structure.
 
-| Doc | What it covers |
-|---|---|
-| `README.md` | This file — overview, install, quick start |
-| `INSTALL.md` | Detailed install + verification + Cowork setup |
-| `CHANGELOG.md` | Per-version diff (v1.0 → v1.1 → v2.0) |
-| `docs/SYSTEM-ARCHITECTURE.md` | Architectural overview tying everything together |
-| `docs/STATE-FACILITY-README.md` | The `.project-state/` directory tree |
-| `docs/SCHEMA.md` | Schema reference for every entity |
-| `docs/CONCURRENCY.md` | Concurrency model (shared-drive writes) |
-| `docs/SKILLS-REFERENCE.md` | Per-skill catalog |
-| `docs/PROJECT-WEBSITE.md` | Website integration in full |
-| `docs/REPORTING-MATRIX.md` | **NEW v2.0** — the stakeholder reporting matrix in depth |
-| `docs/PACK-AUTHORING.md` | **NEW v2.0** — how to write a compliance pack |
-| `docs/PACK-CATALOG.md` | **NEW v2.0** — what ships, combinations, roadmap |
-| `docs/MIGRATION-V1-TO-V2.md` | **NEW v2.0** — five-step migration walkthrough |
+---
 
-## Contact
+## Compatibility
 
-David Olsson · Atomic47 Labs Inc. · david@atomic47.co
+- **Claude Code** (CLI) — full support
+- **Claude Coworker / FleetView** — full support
+- **Claude API with skill loading** — full support
+
+Requires Claude with skill-loading capability. MCPs for Slack, Gmail, Calendar, scsiwyg, and Google Calendar are optional but unlock the surface routing features.
+
+---
+
+## Version history
+
+| Version | Date | Notes |
+|---|---|---|
+| v3.0 | 2026-05 | Plugin packaging. `project-doc-suite`, `project-sred-tracker/reviewer`, `project-onboarding`, `project-harvester`. Full generalization — no funder-specific defaults. |
+| v2.0 | 2026-04 | Generic core + compliance packs. Reporting matrix. Pack-profile-driven skills. |
+| v1.x | 2025 | Initial release. PIC/PCAIS-specific. |
+
+---
+
+## License
+
+MIT — see `LICENSE`.
+
+Built by [Atomic47 Labs](https://atomic47.co). Questions: [david@atomic47.co](mailto:david@atomic47.co)
