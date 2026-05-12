@@ -4,7 +4,7 @@
 **Released:** 2026-04-27
 **Purpose:** A generic operational substrate for any multi-stakeholder project — grant-funded consortiums, client engagements, startups with boards, open-source communities, internal product teams. Built to handle the multi-stakeholder reporting problem that eats Project Lead time on every project regardless of funding source.
 
-This repo contains **eighteen `project-*` skills** plus **five reference compliance packs** that, together with a structured filesystem facility called `.project-state/`, turn any multi-stakeholder project into a system where routine reporting becomes a byproduct of normal work.
+This repo contains **nineteen `project-*` skills** plus **five reference compliance packs** that, together with a structured filesystem facility called `.project-state/`, turn any multi-stakeholder project into a system where routine reporting becomes a byproduct of normal work.
 
 ## What's new in v2.0
 
@@ -41,7 +41,7 @@ See `docs/MIGRATION-V1-TO-V2.md` for the migration path from v1.x; see `CHANGELO
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## The eighteen skills
+## The nineteen skills
 
 ### Foundation
 | Skill | Role |
@@ -67,6 +67,7 @@ See `docs/MIGRATION-V1-TO-V2.md` for the migration path from v1.x; see `CHANGELO
 | `project-change-register` | Material vs. non-material classification. |
 | `project-blog-publisher` | scsiwyg bridge with publication-review respect. |
 | `project-website-publisher` | Static project website with stable URLs. |
+| `project-doc-suite-generator` | Baseline report bundle — styled `.docx` and `.xlsx` from substrate. |
 
 ### Polish
 | Skill | Role |

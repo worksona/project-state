@@ -8,7 +8,7 @@ This is the install guide for the v2.0 generic core + compliance packs. If you'r
 - Each teammate has Claude with skill-loading support (Claude Code / Agent SDK / Cowork)
 - (Optional) Slack / Gmail / Google Calendar / scsiwyg / Vercel MCPs connected if you want surface routing
 
-## The eighteen v2.0 skills
+## The nineteen v2.0 skills
 
 ### P0 — Foundations
 | Skill | Purpose |
@@ -33,7 +33,8 @@ This is the install guide for the v2.0 generic core + compliance packs. If you'r
 | `project-funder-reporting` | **NEW name** — generic stakeholder-bound reports (was `project-claim-prep`). |
 | `project-change-register` | Material vs. non-material change classification. |
 | `project-blog-publisher` | scsiwyg bridge with publication-review respect. |
-| `project-website-publisher` | Static project website (added in v1.1). |
+| `project-website-publisher` | Static project website with visibility-tier enforcement. |
+| `project-doc-suite-generator` | Baseline report bundle — styled `.docx` and `.xlsx` from substrate. |
 
 ### P3 — Polish
 | Skill | Purpose |
@@ -69,7 +70,7 @@ for skill in project-state project-scaffolder \
              project-orchestrator project-notifier \
              project-review-meeting project-funder-reporting \
              project-change-register project-blog-publisher \
-             project-website-publisher \
+             project-website-publisher project-doc-suite-generator \
              project-onboarder project-ip-tracker \
              project-external-comms project-lessons \
              project-archive ; do
@@ -165,7 +166,7 @@ cd /path/to/.project-state/skills/project-<name>
 
 ## Description length constraint (still applies)
 
-Every SKILL.md frontmatter description must be ≤1024 characters. All 18 v2.0 skills comply. Verify with:
+Every SKILL.md frontmatter description must be ≤1024 characters. All 19 v2.0 skills comply. Verify with:
 
 ```bash
 python3 -c "

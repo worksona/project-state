@@ -1,5 +1,56 @@
 # Changelog
 
+## v3.0 — 2026-05-11
+
+### Architectural shift
+
+**Unified reporting mechanism — one context, one document tree.** The v2.0 suite had two parallel documentation pipelines that didn't know about each other: `project-doc-suite-generator` (reading `.project-state/` → 7 Office files) and the global `doc-suite-generator-v2` skill (reading a codebase scan → 11 markdown documents). The Architecture-Overview.docx had never read the actual codebase; the technical-specification.md had no idea which milestone it was delivering against. v3.0 collapses both into a single unified suite.
+
+### Added
+
+- **`project-doc-suite` skill (#20)** — unified documentation suite generator. Assembles a shared context object by merging `.project-state/` substrate data (milestones, risks, phases, budget, manifest, reporting matrix) with a live codebase scan before generating any document. Produces 15 non-overlapping documents in `reports/unified-suite/YYYY-MM-DD/`. Replaces and supersedes `project-doc-suite-generator`. See `docs/UNIFIED-SUITE-V3.md`.
+- **`docs/UNIFIED-SUITE-V3.md`** — full design reference. Documents the unified context schema, the complete v3 document tree (15 files, 4 bands), the two full document collapses (Architecture + tech-spec → one; Roadmap + business-benefits → one), the four enriched governance Office files, the 8-phase generation pipeline, pack extension point, and open implementation questions.
+- **`v3/README.md`** — v3-specific README covering the unified suite design and upgrade path.
+- **`v3/INSTALL.md`** — v3-specific install guide with fresh install and v2→v3 upgrade instructions.
+
+### Changed
+
+- **`project-doc-suite-generator`** — deprecated. The skill still functions on v2.x but will be removed in v3.1. Every invocation now shows a deprecation notice pointing to `project-doc-suite`. Output path was `reports/baseline/Baseline-Reports-YYYY-MM-DD/`; new path is `reports/unified-suite/YYYY-MM-DD/`.
+
+### Document collapse (23 → 15, −35%)
+
+| Removed | Replaced by |
+|---------|-------------|
+| `Baseline-Reports-Index.docx` + `00-executive-summary.md` | `00-suite-index.md` |
+| `Architecture-Overview.docx` + `01-project-overview.md` + `01b-technical-specification.md` | `05-architecture-and-tech-spec.md` |
+| `Roadmap-and-KPIs.docx` + `02-business-benefits.md` | `06-strategic-roadmap.md` |
+
+### Governance documents enriched (not removed)
+
+| Document | What's new |
+|----------|------------|
+| `01-project-tracker.xlsx` | Two new columns per milestone: primary codebase components + technical readiness score |
+| `02-project-plan.docx` | Component Delivery Map table (phase → components entering production) |
+| `03-risk-register.docx` | Technical Debt Risks section auto-populated from codebase scan readiness gaps |
+| `04-milestone-specs.docx` | Delivery Components + Component Readiness section per milestone |
+
+- **`packs/sred-canada/`** — new compliance pack for Canadian SR&ED T661 tax credit claims. Extends the substrate with `sred/` entities (TU/EX/ADV + evidence log + cost tracking). Provides funder-reporting, phase-gate, and external-comms profiles. Activates `project-sred-tracker` and `project-sred-reviewer`. See `packs/sred-canada/README.md`.
+- **`project-sred-tracker` skill (#21)** — continuous capture of Technological Uncertainties, Experiments, Advancements, and evidence log entries. Enforces TU→EX→ADV traceability chain. Runs quarterly gap analysis and completeness reviews. Tracks 18-month CRA filing deadline. Active when `sred-canada` pack is loaded.
+- **`project-sred-reviewer` skill (#22)** — T661 narrative review and audit-risk reduction. CRA-reviewer simulation, cross-section traceability check, risky language flagging, safer rewrites for Sections E/F/G, readiness verdict. Elevates the standalone `sred-submission-reviewer` skill into the project-state substrate. Active when `sred-canada` pack is loaded.
+- **`project-onboarding` skill (#23)** — guided new-project onboarding. Interleaves facility orientation prose with targeted questions; handles pack selection (all 6 packs, branching logic), document ingestion and field extraction, stakeholder mapping, milestone capture, and freeform goals/examples/anti-patterns capture. Writes all captured context to substrate reference files. Calls `project-scaffolder` as its final step. Distinct from `project-scaffolder` (which initializes the filesystem); `project-onboarding` fills the context that makes the substrate useful. Synthetic content (when offered) is always labeled and requires user approval before writing.
+- **`docs/PACK-CATALOG.md`** — updated to v3.0; `sred-canada` added; combinations table updated; roadmap cleaned of already-shipped packs.
+
+### Migration from v2.x
+
+Additive — no substrate changes required. ~10 minutes:
+1. Symlink `project-doc-suite` into `~/.claude/skills/`
+2. Replace any invocation of `project-doc-suite-generator` with `project-doc-suite`
+3. Output path changes from `reports/baseline/Baseline-Reports-YYYY-MM-DD/` to `reports/unified-suite/YYYY-MM-DD/`
+
+See `v3/INSTALL.md` for the full upgrade walkthrough.
+
+---
+
 ## v2.0 — 2026-04-27
 
 ### Architectural shift
