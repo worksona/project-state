@@ -49,26 +49,26 @@ Format:
 
 ```markdown
 ---
-id: 2026-05-14-mpa-schedule-c
+id: 2026-05-14-sow-schedule-c
 date: 2026-05-14
 title: "Schedule C SOP review saved us a quarter of confusion"
-tags: [process, PIC]
+tags: [process, funder]
 severity: positive
 related_milestone: null
-related_decision: 2026-05-05-pic-sop-adoption
-recommended_action: "For future PCAIS projects: adopt PIC's SOP template unmodified at first SC meeting; customize later if needed."
+related_decision: 2026-05-05-sop-adoption
+recommended_action: "For future projects: adopt the funder's SOP template unmodified at first review meeting; customize later if needed."
 created: 2026-05-14T10:00:00Z
-created_by: david@atomic47.co
+created_by: project-lead@example.org
 ---
 
-At the first SC meeting we spent 30 minutes going through the PIC-provided
-SOP template. We were tempted to skip it — it looked boilerplate. But
-it turned out to address exactly the questions that caused friction in
-one of A47's earlier research engagements. Adopting unmodified and
-customizing later worked.
+At the first review meeting we spent 30 minutes going through the
+funder-provided SOP template. We were tempted to skip it — it looked
+boilerplate. But it turned out to address exactly the questions that
+caused friction in a previous consortium engagement. Adopting unmodified
+and customizing later worked.
 
-The specific win: the "PIC role" language in the SOP preempted a drift
-in our first month where we started treating PIC PM as a voting member.
+The specific win: the role language in the SOP preempted a drift
+in our first month where we started treating the funder PM as a voting member.
 ```
 
 ### `list(filters)`
@@ -90,10 +90,10 @@ At closeout, produce a section for the final report. Include:
 - What went well (positive lessons)
 - What went differently than planned (neutral + negative)
 - Near-misses (we almost tripped on X — here's what saved us)
-- Recommendations for future PCAIS / PIC projects
+- Recommendations for future projects with this funder or program
 - Recommendations for the Consortium in future engagements
 
-Save as `reports/pic-submissions/lessons-learned-final.md`.
+Save as `reports/lessons-learned-final.md`.
 
 ## Discipline
 
@@ -106,7 +106,7 @@ Save as `reports/pic-submissions/lessons-learned-final.md`.
 ## Integration
 
 - **project-state** — writes `lessons-learned/*.md`.
-- **project-sc-meeting** — Section 10 "Open Discussion / Lessons Learned" pulls recent captures.
+- **project-review-meeting** — Section 10 "Open Discussion / Lessons Learned" pulls recent captures.
 - **project-status-reporter** — weekly and SC packs may surface 1–2 recent lessons.
 - **project-archive** — invokes `contribute_to_final_report()` at project close.
 

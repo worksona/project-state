@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fafaf9;
+  --foreground: #0f172a;
+  --accent: #1e3a5f;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --card: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+html, body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.prose-doc { line-height: 1.7; color: #1e293b; }
+.prose-doc h1, .prose-doc h2, .prose-doc h3, .prose-doc h4 {
+  color: #0f172a; font-weight: 600; letter-spacing: -0.01em;
+  margin-top: 1.75em; margin-bottom: 0.5em;
+}
+.prose-doc h1.doc-title { font-size: 1.875rem; margin-top: 0; }
+.prose-doc h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3em; }
+.prose-doc h3 { font-size: 1.25rem; }
+.prose-doc h4 { font-size: 1.05rem; }
+.prose-doc p { margin: 0.75em 0; }
+.prose-doc ul, .prose-doc ol { margin: 0.75em 0; padding-left: 1.5em; }
+.prose-doc ul { list-style: disc; }
+.prose-doc ol { list-style: decimal; }
+.prose-doc li { margin: 0.25em 0; }
+.prose-doc table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.9rem; }
+.prose-doc th, .prose-doc td {
+  border: 1px solid var(--border);
+  padding: 0.5em 0.75em; text-align: left; vertical-align: top;
+}
+.prose-doc th { background: #f8fafc; font-weight: 600; }
+.prose-doc a { color: var(--accent); text-decoration: underline; }
+.prose-doc code {
+  background: #f1f5f9; padding: 0.1em 0.3em; border-radius: 0.25rem;
+  font-family: var(--font-mono); font-size: 0.9em;
+}
+.prose-doc pre {
+  background: #0f172a; color: #f8fafc; padding: 1em;
+  border-radius: 0.5rem; overflow-x: auto;
+}
+.prose-doc pre code { background: transparent; padding: 0; color: inherit; }
+.prose-doc blockquote {
+  border-left: 3px solid var(--accent); padding-left: 1em;
+  color: var(--muted); margin: 1em 0; font-style: italic;
+}
+
+.sheet-table {
+  border-collapse: collapse; font-size: 0.8rem; width: max-content; min-width: 100%;
+}
+.sheet-table th, .sheet-table td {
+  border: 1px solid var(--border); padding: 0.35em 0.6em;
+  text-align: left; white-space: nowrap; max-width: 28rem; overflow: hidden; text-overflow: ellipsis;
+}
+.sheet-table thead th { background: #f1f5f9; font-weight: 600; position: sticky; top: 0; }
+.sheet-table tbody tr:nth-child(even) { background: #fafafa; }

@@ -1,9 +1,33 @@
+# Dependencies
 node_modules/
-.DS_Store
-*.pyc
-__pycache__/
-.env
-*.lock
-!packs/**/*.lock
 .next/
 out/
+
+# OS
+.DS_Store
+
+# Python
+*.pyc
+__pycache__/
+
+# Env
+.env
+
+# Lock files (keep pack locks)
+*.lock
+!packs/**/*.lock
+
+# Project-specific pack — not distributed with the public plugin
+packs/pic-pcais/
+
+# Website template build artifacts — template source is distributed,
+# built output and installed dependencies are not
+templates/website/.next/
+templates/website/node_modules/
+templates/website/package-lock.json
+
+# Dev / internal artefacts
+project-state-v2.zip
+project-state-v3.zip
+archive/
+v3/

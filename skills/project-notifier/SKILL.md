@@ -114,8 +114,8 @@ This lets `project-orchestrator` call `notify` eagerly without worrying about du
 ## Discipline
 
 - **Never auto-send Gmail.** If the surfaces config were ever mutated to `always_draft: false`, refuse to send and escalate. This is an MPA/PIC compliance concern.
-- **Never post to public Slack channels without reviewing confidentiality.** Default all posts to internal channels; public-adjacent posts route through `project-publications` first.
-- **Respect the MPA publication clock.** If a notification includes results that haven't cleared the 30/14-day SC review, route through `project-publications` first.
+- **Never post to public Slack channels without reviewing confidentiality.** Default all posts to internal channels; public-adjacent posts route through `project-external-comms` first.
+- **Respect the MPA publication clock.** If a notification includes results that haven't cleared the 30/14-day SC review, route through `project-external-comms` first.
 - **Include links, not screenshots.** Every Slack/Gmail message references the canonical `.project-state/` file by path so the recipient can click through.
 
 ## Integration
@@ -123,7 +123,7 @@ This lets `project-orchestrator` call `notify` eagerly without worrying about du
 - **project-state** — reads surfaces config; writes `notify.*` events; maintains `recent_notifications` key map.
 - **project-status-reporter** — biggest caller; produces weekly/SC/claim payloads.
 - **project-orchestrator** — drives reminders and calendar holds on schedule.
-- **project-sc-meeting** — uses this for invites + minutes distribution.
-- **project-claim-prep** — uses this for deadline reminders and PIC PM draft email.
+- **project-review-meeting** — uses this for invites + minutes distribution.
+- **project-funder-reporting** — uses this for deadline reminders and PIC PM draft email.
 - **project-phase-gate** — phase transitions alert the team.
 - **project-blog-publisher** — parallel skill for scsiwyg; shares the publication-review discipline.

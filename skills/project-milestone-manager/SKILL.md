@@ -1,6 +1,6 @@
 ---
 name: project-milestone-manager
-description: "CRUD project milestones, update percent complete and technical progress narrative, flag at-risk or blocked milestones, and regenerate the tracking xlsx from the YAML source of truth. Use this skill whenever the user says 'update M03', 'milestone status', 'how's M05 going', 'mark M01 complete', 'what milestones are at risk', 'recompute overall percent complete', 'list milestones', 'add a new deliverable to M07', 'assign owner to M12', 'regenerate the milestones tracker', or any request to read or write milestone state. Also trigger when project-status-reporter needs milestone data for a weekly report or SC pack, when project-claim-prep needs % complete + technical_progress for the quarterly claim, when project-phase-gate checks whether gate milestones are done, or when project-change-register needs to know which milestones a change affects. PIC requires technical_progress + percent_complete per milestone on every claim — this skill owns that surface."
+description: "CRUD project milestones, update percent complete and technical progress narrative, flag at-risk or blocked milestones, and regenerate the tracking xlsx from the YAML source of truth. Use this skill whenever the user says 'update M03', 'milestone status', 'how's M05 going', 'mark M01 complete', 'what milestones are at risk', 'recompute overall percent complete', 'list milestones', 'add a new deliverable to M07', 'assign owner to M12', 'regenerate the milestones tracker', or any request to read or write milestone state. Also trigger when project-status-reporter needs milestone data for a weekly report or SC pack, when project-funder-reporting needs % complete + technical_progress for the quarterly claim, when project-phase-gate checks whether gate milestones are done, or when project-change-register needs to know which milestones a change affects. PIC requires technical_progress + percent_complete per milestone on every claim — this skill owns that surface."
 ---
 
 # Project Milestone Manager
@@ -34,7 +34,7 @@ Every other field (planned/actual dates, deliverables, owner, budget category, s
 
 Read every file under `milestones/`. Return an array sorted by id. Optional filters:
 - `status: planned | in_progress | at_risk | complete | blocked`
-- `owner_short: "A47" | "CDI"`
+- `owner_short: "OrgA" | "OrgB"`
 - `proposal_phase: "Phase 1 – ..."` (loose match)
 - `at_risk: true` (shortcut for status in {at_risk, blocked})
 
@@ -67,7 +67,7 @@ The most-used operation. Common field updates:
 | "M05 is at risk — waiting on M04 data" | `status: at_risk`, `at_risk_reason: "Blocked on M04 labeled dataset completeness."` |
 | "M01 is done"                          | `status: complete`, `percent_complete: 100`, `actual_end: <today>` |
 | "M07 started today"                    | `status: in_progress`, `actual_start: <today>`          |
-| "Jane from A47 now owns M11"           | `owner_person: <slug-of-person-record>` (create people entry if missing via project-state) |
+| "Jane from OrgB now owns M11"          | `owner_person: <slug-of-person-record>` (create people entry if missing via project-state) |
 
 All writes go through `project-state` for locking + logging. Event names:
 - `milestone.created`
@@ -114,13 +114,13 @@ Event logged: `tracking.regenerated` with `target: "milestones.xlsx"`.
 - **Always update `technical_progress` when `percent_complete` changes.** If the user provides a number but no narrative, ask them for one line of context. PIC requires the narrative.
 - **Require `at_risk_reason` when `status` becomes `at_risk` or `blocked`.**
 - **Don't edit `completion_criteria` casually.** That text is from the MPA Schedule A. Edits to it require a Change Order.
-- **Respect ownership.** M01, M03, M06, M08, M09, M12 are CDI-owned. M02, M04, M05, M07, M10, M11, M13 are A47-owned. If asked to update a milestone by someone from the other org, warn and suggest they confirm with the owner.
+- **Respect ownership.** If asked to update a milestone owned by a different organisation, warn and suggest confirming with the owner before making changes.
 
 ## Integration with other skills
 
 - **project-state** — all writes route through it.
 - **project-status-reporter** — pulls milestone state for weekly reports, SC packs, and quarterly claims.
-- **project-claim-prep** — pulls `percent_complete` + `technical_progress` per milestone at quarter-close for the PIC MS & financial tracking form.
+- **project-funder-reporting** — pulls `percent_complete` + `technical_progress` per milestone at quarter-close for the PIC MS & financial tracking form.
 - **project-phase-gate** — may reference milestone completion as a gate-out criterion (e.g., M13 complete → closeout gate opens).
 - **project-change-register** — when a milestone is added/subtracted or its timeline shifts ≥3 months, that's a material change requiring a Change Order.
 

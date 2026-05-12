@@ -1,9 +1,19 @@
 ---
 name: project-doc-suite-generator
-description: "Generate a baseline report bundle of styled .docx and .xlsx files from .project-state/ — index, tracker workbook, project plan, risk register, milestone specs, architecture overview, and roadmap/KPIs. Triggered by phase transitions, milestone completions, on-demand requests, or the orchestrator. Use whenever the user says 'generate baseline reports', 'create the report bundle', 'produce the docx outputs', 'build the tracker xlsx', 'baseline report bundle', or any request for structured Office-format project documents. Outputs to reports/baseline/Baseline-Reports-YYYY-MM-DD/."
+description: "⚠️ DEPRECATED in v3.0 — use project-doc-suite instead. project-doc-suite generates the same governance Office files plus a full software documentation suite, all from a unified context that reads both .project-state/ and the live codebase. This skill will be removed in v3.1. If you are on v2.x and cannot upgrade, this skill still functions: generates index, tracker xlsx, project plan, risk register, milestone specs, architecture overview, and roadmap/KPIs from .project-state/ only."
 ---
 
 # Project Doc Suite Generator
+
+> ⚠️ **Deprecated in v3.0.** Use `project-doc-suite` instead.
+>
+> `project-doc-suite` merges `.project-state/` substrate data with a live codebase scan, produces the same governance Office files enriched with technical context, adds unified strategic + technical documents (replacing the duplicate Architecture-Overview and Roadmap documents), and adds the full software insight suite — all in one non-overlapping bundle.
+>
+> **Migration:** replace any invocation of `project-doc-suite-generator` with `project-doc-suite`. The output path changes from `reports/baseline/Baseline-Reports-YYYY-MM-DD/` to `reports/unified-suite/YYYY-MM-DD/`. See `docs/UNIFIED-SUITE-V3.md`.
+
+---
+
+# Project Doc Suite Generator (v2 — legacy)
 
 ## Purpose
 

@@ -58,7 +58,7 @@ Specifics below customize this skeleton.
 **Output template (`reports/weekly/YYYY-Www.md`):**
 
 ```markdown
-# Weekly report — YYYY-Www — Project Ai26.10
+# Weekly report — YYYY-Www — [Project Short Name]
 
 **Phase:** <current-phase-label> — <gate-status-summary>
 **Overall health:** <green/yellow/red> — <one-line reason>
@@ -113,7 +113,7 @@ Per PIC PM Guide: "Each project member must complete a MS and financial tracking
 
 Also produce a `reports/claims/YYYY-QN.yaml` record per the schema (under `project-state` locking).
 
-Hand off to `project-claim-prep` for the detailed PIC-form assembly; this skill produces the narrative wrapper.
+Hand off to `project-funder-reporting` for the detailed PIC-form assembly; this skill produces the narrative wrapper.
 
 ## Ad-hoc status
 
@@ -133,7 +133,7 @@ One page. Designed for a glance. Sections: phase + gate, health, milestones tabl
 - **Never invent facts.** If `percent_complete` isn't current, report the last known value and flag the staleness. Do not estimate.
 - **Health ratings come from state, not vibes.** Override only if the caller provides an explicit reason; log the override.
 - **Sources are traceable.** Every number in a report is backed by a file in `.project-state/`. Reports reference that file by id in a footnote when depth matters.
-- **Pre-publication review.** If a report will go public (blog, press), route through `project-publications` for the 30/14-day SC review per MPA.
+- **Pre-publication review.** If a report will go public (blog, press), route through `project-external-comms` for the 30/14-day SC review per MPA.
 
 ## Integration
 
@@ -141,7 +141,7 @@ One page. Designed for a glance. Sections: phase + gate, health, milestones tabl
 - **project-milestone-manager** — primary milestone data source.
 - **project-phase-gate** — current phase + gate pending items.
 - **project-change-register** — pending / recent changes for SC pack and weekly.
-- **project-claim-prep** — does the detail work for quarterly claims.
+- **project-funder-reporting** — does the detail work for quarterly claims and other funder reports.
 - **project-doc-suite-generator** — shares docx/xlsx rendering primitives; produces baseline report bundles.
 - **project-notifier** — routes the finished report to Slack, Gmail draft, or Calendar hold.
 - **project-blog-publisher** — downstream consumer for public-friendly progress.

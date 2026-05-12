@@ -1,4 +1,4 @@
-# Pack Catalog (v2.0)
+# Pack Catalog (v3.0)
 
 Packs that ship with this v2.0 release. Install by copying the pack folder into `.project-state/packs/` and adding the pack ID to `manifest.yaml.project.packs_loaded`.
 
@@ -59,6 +59,23 @@ For open-source projects with public-by-default visibility and community governa
 
 **Maturity:** starter — minimal scaffold.
 
+### `sred-canada` — Canadian SR&ED Tax Credit _(new in v3.0)_
+
+For any Canadian company performing scientific research or experimental development and claiming the CRA SR&ED tax incentive (T661/T2SCH1). Unlike all other packs, SR&ED is a tax mechanism — CRA is not a project stakeholder. The pack runs in parallel with whatever delivery pack is active.
+
+- Extends substrate with SR&ED-specific entities: Technological Uncertainties (TUs), Experiments (EXs), Technological Advancements (ADVs), evidence log, cost tracking
+- Continuous work capture via `project-sred-tracker` — record TUs and evidence at the time of the work, not reconstructed at year-end
+- Annual T661 narrative generation (Sections E, F, G) from structured substrate entities
+- Quarterly evidence log completeness reviews with gap analysis
+- Pre-submission audit-risk review via `project-sred-reviewer` (CRA reviewer simulation, cross-section traceability check, risky language flags)
+- 18-month CRA filing deadline tracking with escalating warnings
+- Patent/publication coordination via external-comms profile
+- Activates two SR&ED-specific skills: `project-sred-tracker` and `project-sred-reviewer`
+
+**Maturity:** starter. Tune fiscal year end, field of science codes, and cost allocation to your organization.
+
+**Pairs with:** any project-type pack. SR&ED is additive.
+
 ## Combinations that work well
 
 | Project shape | Packs to load |
@@ -66,9 +83,13 @@ For open-source projects with public-by-default visibility and community governa
 | Standalone PIC consortium | `pic-pcais` |
 | PIC consortium that also engages a customer | `pic-pcais + client-services` |
 | Engineering team building a PIC-funded project | `pic-pcais + agile-default` |
+| PIC consortium with SR&ED-eligible experimental work | `pic-pcais + sred-canada` |
 | Startup with VC funding doing client work | `board-investor + client-services + agile-default` |
+| VC-backed startup with R&D component | `board-investor + agile-default + sred-canada` |
+| Consulting project with experimental development | `client-services + sred-canada` |
 | OSS project with corporate sponsor | `open-source-community + board-investor` |
 | Internal product team with no external reporting | `agile-default` only |
+| Internal product team filing SR&ED | `agile-default + sred-canada` |
 
 ## Roadmap (packs to ship in future releases)
 
@@ -80,7 +101,7 @@ For open-source projects with public-by-default visibility and community governa
 - `iso-27001` — ISO 27001 control attestation
 - `fda-part11` — FDA Part 11 electronic records compliance
 
-These are scaffolded as stubs in v2.0 (pack folders exist with manifest + README explaining what they'll contain) but not built out. Community contributions welcome.
+These are not yet built. Community contributions welcome.
 
 ## How to contribute a pack
 

@@ -126,7 +126,7 @@ Return all COs with `status in {drafted, submitted, under_review}`. Used by SC p
 - **project-state** — all writes go through it.
 - **project-notifier** — PIC PM Gmail draft for CO submission; SC reminders.
 - **project-status-reporter** — pulls change-log + open COs for weekly and SC pack.
-- **project-sc-meeting** — incorporates pending COs into Section 4 of the agenda.
+- **project-review-meeting** — incorporates pending COs into Section 4 of the agenda.
 - **project-milestone-manager** — CO affecting milestones cross-references those milestones.
 - **project-ip-tracker** — IP-rationale-change COs coordinate with the IP abstract.
 - **project-phase-gate** — CO approvals that amend Schedule A may unblock gate criteria.
